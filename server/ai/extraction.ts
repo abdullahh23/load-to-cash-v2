@@ -74,40 +74,7 @@ export async function extractFromFile(
     },
   ];
 
-  // For PDFs, try with a vision model that supports documents
-  const pdfModel = isPdf ? 'google/gemini-2.0-flash-exp:free' : model;
-  
-  let rawText: string;
-  try {
-    rawText = await callOpenRouter(messages, apiKey, pdfModel);
-  } catch (firstError) {
-    // Fallback: try with the image_url approach for PDFs too
-    if (isPdf) {
-      console.log('[Extract] PDF text approach failed, trying image_url fallback...');
-      const fallbackMessages = [
-        {
-          role: 'system' as const,
-          content: EXTRACTION_PROMPT,
-        },
-        {
-          role: 'user' as const,
-          content: [
-            {
-              type: 'text' as const,
-              text: 'Extract the load details from this rate confirmation document. Return JSON only.',
-            },
-            {
-              type: 'image_url' as const,
-              image_url: { url: dataUrl },
-            },
-          ],
-        },
-      ];
-      rawText = await callOpenRouter(fallbackMessages, apiKey, 'google/gemini-2.0-flash-exp:free');
-    } else {
-      throw firstError;
-    }
-  }
+  const rawText = await callOpenRouter(messages, apiKey, model);
 
   // Parse JSON from response - handle potential markdown wrapping
   const cleaned = rawText.replace(/```json|```/g, '').trim();
