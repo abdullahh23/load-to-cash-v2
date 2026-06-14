@@ -45,7 +45,7 @@ export function LoadTable({ loads, onRemove }: LoadTableProps) {
                       {load.loadNumber || '—'}
                     </span>
                     {isExtracted ? (
-                      <span className="flex items-center gap-0.5 text-[9px] font-extrabold bg-teal-50 border border-teal-200 text-teal-700 px-1.5 py-0.5 rounded-full" title="Auto-extracted via Gemini AI">
+                      <span className="flex items-center gap-0.5 text-[9px] font-extrabold bg-teal-50 border border-teal-200 text-teal-700 px-1.5 py-0.5 rounded-full" title="Auto-extracted via AI">
                         <Sparkles size={8} /> AI
                       </span>
                     ) : (
