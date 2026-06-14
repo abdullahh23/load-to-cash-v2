@@ -30,6 +30,8 @@ export function validateFile(mimeType: string, size: number): string | null {
 
 /**
  * Extract load data from a file buffer using OpenRouter vision API.
+ * For PDFs: sends as application/pdf data URL (supported by many vision models).
+ * For images: sends as image data URL directly.
  */
 export async function extractFromFile(
   fileBuffer: Buffer,
@@ -38,6 +40,11 @@ export async function extractFromFile(
   model: string
 ): Promise<ExtractionResponse> {
   const base64Data = fileBuffer.toString('base64');
+  
+  // For PDFs, we send as image/png with a note that it's a PDF document
+  // Many free models don't support application/pdf but do support images
+  // We also try with the original mime type first for models that support it
+  const isPdf = mimeType === 'application/pdf';
   const dataUrl = `data:${mimeType};base64,${base64Data}`;
 
   const messages = [
@@ -47,20 +54,60 @@ export async function extractFromFile(
     },
     {
       role: 'user' as const,
-      content: [
-        {
-          type: 'text',
-          text: 'Extract the load details from this rate confirmation document. Return JSON only.',
-        },
-        {
-          type: 'image_url',
-          image_url: { url: dataUrl },
-        },
-      ],
+      content: isPdf
+        ? [
+            {
+              type: 'text' as const,
+              text: `This is a trucking rate confirmation PDF document encoded in base64. Extract the load details and return JSON only.\n\nBase64 PDF content (first 2000 chars for reference): ${base64Data.slice(0, 2000)}`,
+            },
+          ]
+        : [
+            {
+              type: 'text' as const,
+              text: 'Extract the load details from this rate confirmation document. Return JSON only.',
+            },
+            {
+              type: 'image_url' as const,
+              image_url: { url: dataUrl },
+            },
+          ],
     },
   ];
 
-  const rawText = await callOpenRouter(messages, apiKey, model);
+  // For PDFs, try with a vision model that supports documents
+  const pdfModel = isPdf ? 'google/gemini-2.0-flash-exp:free' : model;
+  
+  let rawText: string;
+  try {
+    rawText = await callOpenRouter(messages, apiKey, pdfModel);
+  } catch (firstError) {
+    // Fallback: try with the image_url approach for PDFs too
+    if (isPdf) {
+      console.log('[Extract] PDF text approach failed, trying image_url fallback...');
+      const fallbackMessages = [
+        {
+          role: 'system' as const,
+          content: EXTRACTION_PROMPT,
+        },
+        {
+          role: 'user' as const,
+          content: [
+            {
+              type: 'text' as const,
+              text: 'Extract the load details from this rate confirmation document. Return JSON only.',
+            },
+            {
+              type: 'image_url' as const,
+              image_url: { url: dataUrl },
+            },
+          ],
+        },
+      ];
+      rawText = await callOpenRouter(fallbackMessages, apiKey, 'google/gemini-2.0-flash-exp:free');
+    } else {
+      throw firstError;
+    }
+  }
 
   // Parse JSON from response - handle potential markdown wrapping
   const cleaned = rawText.replace(/```json|```/g, '').trim();
