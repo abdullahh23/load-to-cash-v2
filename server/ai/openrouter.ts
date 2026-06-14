@@ -5,9 +5,9 @@
  */
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MAX_RETRIES = 3;
-const TIMEOUT_MS = 60_000;
-const RETRY_DELAYS = [1000, 3000, 8000];
+const MAX_RETRIES = 2;
+const TIMEOUT_MS = 30_000;
+const RETRY_DELAYS = [500, 2000];
 
 interface OpenRouterMessage {
   role: 'system' | 'user';
