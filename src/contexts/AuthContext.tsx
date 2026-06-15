@@ -14,6 +14,9 @@ interface AuthContextValue {
   resendVerification: () => Promise<{ error: string | null }>;
   refreshProfile: () => Promise<void>;
   isAdmin: boolean;
+  isPending: boolean;
+  isSuspended: boolean;
+  canUpload: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -131,6 +134,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
+  // Default to 'approved' if status column doesn't exist yet (migration not run)
+  const userStatus = profile?.status || 'approved';
+  const isAdminUser = profile?.role === 'admin' && !profile?.is_disabled;
+  const isPending = !isAdminUser && userStatus === 'pending';
+  const isSuspended = !isAdminUser && userStatus === 'suspended';
+  const isApproved = isAdminUser || userStatus === 'approved';
+  const limit = profile?.monthly_upload_limit ?? 0;
+  const used = profile?.uploads_used ?? 0;
+  const quotaExceeded = isApproved && limit > 0 && used >= limit;
+  const canUpload = isApproved && !quotaExceeded && !profile?.is_disabled;
+
   const value: AuthContextValue = {
     session,
     user: session?.user ?? null,
@@ -143,6 +157,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     resendVerification,
     refreshProfile,
     isAdmin: profile?.role === 'admin' && !profile?.is_disabled,
+    isPending: !!isPending,
+    isSuspended: !!isSuspended,
+    canUpload: !!canUpload,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

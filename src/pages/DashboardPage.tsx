@@ -1,10 +1,11 @@
-import { CheckCircle, Plus, AlertTriangle } from 'lucide-react';
+import { CheckCircle, Plus, AlertTriangle, Shield, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { UploadZone } from '../components/UploadZone';
 import { LoadTable } from '../components/LoadTable';
 import { TotalsBar } from '../components/TotalsBar';
 import { ManualLoadModal } from '../components/loads/ManualLoadModal';
 import type { Load, CompanySettings, CarrierSettings } from '../types';
+import type { Profile } from '../lib/supabase';
 import { calcTotals } from '../lib/calc';
 import { useState } from 'react';
 
@@ -12,6 +13,8 @@ interface DashboardPageProps {
   loads: Load[];
   company: CompanySettings;
   carrier: CarrierSettings;
+  profile: Profile | null;
+  canUpload: boolean;
   onLoadExtracted: (load: Load) => void | Promise<void>;
   onManualLoad: (load: Omit<Load, 'id'>) => void | Promise<void>;
   onRemoveLoad: (id: string) => void;
@@ -22,6 +25,8 @@ export function DashboardPage({
   loads,
   company,
   carrier,
+  profile,
+  canUpload,
   onLoadExtracted,
   onManualLoad,
   onRemoveLoad,
@@ -30,6 +35,17 @@ export function DashboardPage({
   const { totalGrossRevenue, dispatchFee } = calcTotals(loads, company.dispatchPercentage);
   const [lastAdded, setLastAdded] = useState<string | null>(null);
   const [manualOpen, setManualOpen] = useState(false);
+
+  const isPending = profile?.status === 'pending';
+  const isSuspended = profile?.status === 'suspended';
+  const limit = profile?.monthly_upload_limit ?? 50;
+  const used = profile?.uploads_used ?? 0;
+  const quotaExceeded = limit > 0 && used >= limit;
+
+  let disabledMessage = '';
+  if (isPending) disabledMessage = 'Your account is awaiting admin approval.';
+  else if (isSuspended) disabledMessage = 'Your account has been suspended. Contact admin.';
+  else if (quotaExceeded) disabledMessage = `Monthly upload limit reached (${used}/${limit}).`;
 
   const handleExtracted = async (load: Load) => {
     await onLoadExtracted(load);
@@ -68,6 +84,28 @@ export function DashboardPage({
         </div>
       )}
 
+      {/* Approval Status Banners */}
+      {isPending && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 text-xs font-semibold flex items-center gap-2.5 shadow-card">
+          <Clock size={16} className="shrink-0 text-amber-600" />
+          <span>Your account is awaiting admin approval. You cannot upload documents yet.</span>
+        </div>
+      )}
+
+      {isSuspended && (
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-xs font-semibold flex items-center gap-2.5 shadow-card">
+          <Shield size={16} className="shrink-0 text-red-600" />
+          <span>Your account has been suspended. Contact admin for assistance.</span>
+        </div>
+      )}
+
+      {quotaExceeded && !isPending && !isSuspended && (
+        <div className="bg-orange-50 border border-orange-200 text-orange-700 rounded-2xl p-4 text-xs font-semibold flex items-center gap-2.5 shadow-card">
+          <AlertTriangle size={16} className="shrink-0 text-orange-600" />
+          <span>Monthly upload limit reached ({used}/{limit}). Contact admin to increase your limit.</span>
+        </div>
+      )}
+
       {lastAdded && (
         <motion.div
           initial={{ opacity: 0, y: -4 }}
@@ -90,7 +128,12 @@ export function DashboardPage({
             <Plus size={14} /> Manual Load Entry
           </button>
         </div>
-        <UploadZone onLoadExtracted={handleExtracted} />
+        <UploadZone onLoadExtracted={handleExtracted} disabled={!canUpload} disabledMessage={disabledMessage} />
+        {profile && profile.status === 'approved' && (
+          <div className="text-xs text-steel font-medium text-right mt-1">
+            Uploads this month: {used} / {limit === 0 ? '∞' : limit}
+          </div>
+        )}
       </div>
 
       {/* Stats Cards */}

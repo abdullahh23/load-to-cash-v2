@@ -7,9 +7,11 @@ import type { ExtractionResult } from '../../shared/schema';
 
 interface UploadZoneProps {
   onLoadExtracted: (load: Load) => void;
+  disabled?: boolean;
+  disabledMessage?: string;
 }
 
-export function UploadZone({ onLoadExtracted }: UploadZoneProps) {
+export function UploadZone({ onLoadExtracted, disabled, disabledMessage }: UploadZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,6 +20,10 @@ export function UploadZone({ onLoadExtracted }: UploadZoneProps) {
 
   const processFile = useCallback(async (file: File) => {
     const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+    if (disabled) {
+      setError(disabledMessage || 'Uploads are currently disabled for your account.');
+      return;
+    }
     if (!allowed.includes(file.type)) {
       setError('Please upload a PDF or an image file (JPG, PNG, WEBP).');
       return;
@@ -68,8 +74,8 @@ export function UploadZone({ onLoadExtracted }: UploadZoneProps) {
           dragging
             ? 'border-signal bg-signal/5 ring-4 ring-signal/15 scale-[0.99]'
             : 'border-steel/20 hover:border-signal/50 hover:bg-lane bg-white/50'
-        } ${loading ? 'pointer-events-none opacity-70' : ''}`}
-        onClick={() => !loading && inputRef.current?.click()}
+        } ${loading ? 'pointer-events-none opacity-70' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        onClick={() => !loading && !disabled && inputRef.current?.click()}
         onDragOver={e => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}

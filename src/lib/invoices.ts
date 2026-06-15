@@ -57,22 +57,53 @@ export async function fetchAdminStats() {
     supabase.from('invoices').select('id', { count: 'exact', head: true }),
   ]);
 
+  // Try to get pending count (may fail if migration not run)
+  let pendingCount = 0;
+  try {
+    const pending = await supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('status', 'pending');
+    pendingCount = pending.count ?? 0;
+  } catch {
+    // status column doesn't exist yet
+  }
+
   const profiles = users.data ?? [];
   return {
     totalUsers: users.count ?? profiles.length,
     activeUsers: profiles.filter(p => !p.is_disabled).length,
     totalLoads: loads.count ?? 0,
     totalInvoices: invoices.count ?? 0,
+    pendingApprovals: pendingCount,
   };
 }
 
 export async function fetchAdminUsers() {
-  const { data: profiles, error } = await supabase
+  // Try with new columns first
+  let profiles: any[] | null = null;
+  let error: any = null;
+
+  const fullQuery = await supabase
     .from('profiles')
-    .select('id, email, full_name, role, is_disabled, created_at')
+    .select('id, email, full_name, role, is_disabled, status, monthly_upload_limit, uploads_used, approved_at, created_at')
     .order('created_at', { ascending: false });
 
-  if (error) throw new Error(error.message);
+  if (fullQuery.error) {
+    // Fallback: new columns don't exist yet
+    const basicQuery = await supabase
+      .from('profiles')
+      .select('id, email, full_name, role, is_disabled, created_at')
+      .order('created_at', { ascending: false });
+    
+    if (basicQuery.error) throw new Error(basicQuery.error.message);
+    profiles = (basicQuery.data ?? []).map(u => ({
+      ...u,
+      status: 'approved',
+      monthly_upload_limit: 50,
+      uploads_used: 0,
+      approved_at: null,
+    }));
+  } else {
+    profiles = fullQuery.data ?? [];
+  }
 
   const users = profiles ?? [];
   const enriched = await Promise.all(
@@ -95,3 +126,50 @@ export async function setUserDisabled(userId: string, disabled: boolean) {
   const { error } = await supabase.from('profiles').update({ is_disabled: disabled, updated_at: new Date().toISOString() }).eq('id', userId);
   if (error) throw new Error(error.message);
 }
+
+export async function approveUser(userId: string, adminId: string) {
+  const { error } = await supabase.from('profiles').update({
+    status: 'approved',
+    approved_at: new Date().toISOString(),
+    approved_by: adminId,
+    updated_at: new Date().toISOString(),
+  }).eq('id', userId);
+  if (error) throw new Error(error.message.includes('column') ? 'Run the database migration first (003_approval_quota.sql)' : error.message);
+}
+
+export async function suspendUser(userId: string) {
+  const { error } = await supabase.from('profiles').update({
+    status: 'suspended',
+    updated_at: new Date().toISOString(),
+  }).eq('id', userId);
+  if (error) throw new Error(error.message.includes('column') ? 'Run the database migration first (003_approval_quota.sql)' : error.message);
+}
+
+export async function updateUserLimit(userId: string, limit: number) {
+  const { error } = await supabase.from('profiles').update({
+    monthly_upload_limit: limit,
+    updated_at: new Date().toISOString(),
+  }).eq('id', userId);
+  if (error) throw new Error(error.message.includes('column') ? 'Run the database migration first (003_approval_quota.sql)' : error.message);
+}
+
+export async function fetchAdminNotifications(limit = 20) {
+  try {
+    const { data, error } = await supabase
+      .from('admin_notifications')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) return []; // table doesn't exist yet
+    return data ?? [];
+  } catch {
+    return []; // table doesn't exist yet
+  }
+}
+
+export async function markNotificationRead(notificationId: string) {
+  const { error } = await supabase.from('admin_notifications').update({ is_read: true }).eq('id', notificationId);
+  if (error) throw new Error(error.message);
+}
+
+

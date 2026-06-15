@@ -15,5 +15,11 @@ export type Profile = {
   full_name: string | null;
   role: 'user' | 'admin';
   is_disabled: boolean;
+  status: 'pending' | 'approved' | 'suspended';
+  monthly_upload_limit: number;
+  uploads_used: number;
+  uploads_reset_at: string | null;
+  approved_at: string | null;
+  approved_by: string | null;
   created_at: string;
 };

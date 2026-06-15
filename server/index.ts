@@ -29,7 +29,23 @@ const upload = multer({
   },
 });
 
-async function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
+// Extend Express Request to carry user info
+interface AuthenticatedRequest extends express.Request {
+  userId?: string;
+  userProfile?: {
+    id: string;
+    role?: string;
+    status: string;
+    monthly_upload_limit: number;
+    uploads_used: number;
+    uploads_reset_at: string;
+  };
+}
+
+/**
+ * Auth middleware — validates Bearer token, attaches userId + profile to request.
+ */
+async function requireAuth(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return next();
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
@@ -42,9 +58,85 @@ async function requireAuth(req: express.Request, res: express.Response, next: ex
     res.status(401).json({ success: false, error: 'Unauthorized' });
     return;
   }
+
+  // Fetch profile with approval/quota fields (gracefully handle if migration not run)
+  let profile: AuthenticatedRequest['userProfile'] | undefined;
+  try {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, role, status, monthly_upload_limit, uploads_used, uploads_reset_at')
+      .eq('id', user.id)
+      .single();
+    profile = data ?? undefined;
+  } catch {
+    // If new columns don't exist yet, fetch basic profile
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, role')
+      .eq('id', user.id)
+      .single();
+    profile = data ? { ...data, status: 'approved', monthly_upload_limit: 0, uploads_used: 0, uploads_reset_at: new Date().toISOString() } : undefined;
+  }
+
+  req.userId = user.id;
+  req.userProfile = profile ?? undefined;
   next();
 }
 
+/**
+ * Approval + Quota middleware — checks user status and upload limits.
+ * Must run AFTER requireAuth.
+ */
+async function requireApproval(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
+  const profile = req.userProfile;
+
+  // If no profile found (Supabase not configured), allow through
+  if (!profile) return next();
+
+  // Admins always bypass approval/quota
+  if (profile.role === 'admin') return next();
+
+  // If status column doesn't exist yet (migration not run), treat as approved
+  if (!profile.status) return next();
+
+  // Check approval status
+  if (profile.status === 'pending') {
+    res.status(403).json({ success: false, error: 'Account pending approval. Please wait for admin to approve your account.' });
+    return;
+  }
+  if (profile.status === 'suspended') {
+    res.status(403).json({ success: false, error: 'Account suspended. Contact admin for assistance.' });
+    return;
+  }
+
+  // Auto-reset monthly uploads if needed
+  const resetAt = new Date(profile.uploads_reset_at);
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+
+  if (resetAt < monthStart && SUPABASE_URL && SUPABASE_ANON_KEY) {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    await supabase
+      .from('profiles')
+      .update({ uploads_used: 0, uploads_reset_at: monthStart.toISOString() })
+      .eq('id', profile.id);
+    profile.uploads_used = 0;
+  }
+
+  // Check quota (0 = unlimited)
+  if (profile.monthly_upload_limit > 0 && profile.uploads_used >= profile.monthly_upload_limit) {
+    res.status(403).json({
+      success: false,
+      error: `Monthly upload limit reached (${profile.uploads_used}/${profile.monthly_upload_limit}). Contact admin to increase your limit.`
+    });
+    return;
+  }
+
+  next();
+}
+
+// Rate limiter
 interface RateLimitInfo {
   count: number;
   resetTime: number;
@@ -75,7 +167,32 @@ function rateLimiter(req: express.Request, res: express.Response, next: express.
   next();
 }
 
-app.post('/api/extract', requireAuth, rateLimiter, upload.single('file'), async (req, res) => {
+// Health check endpoint (Railway)
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// User quota endpoint
+app.get('/api/user/quota', requireAuth as express.RequestHandler, (req: AuthenticatedRequest, res) => {
+  const profile = req.userProfile;
+  if (!profile) {
+    res.json({ status: 'approved', uploads_used: 0, monthly_upload_limit: 0 });
+    return;
+  }
+  res.json({
+    status: profile.status,
+    uploads_used: profile.uploads_used,
+    monthly_upload_limit: profile.monthly_upload_limit,
+  });
+});
+
+// Main extraction endpoint
+app.post('/api/extract',
+  requireAuth as express.RequestHandler,
+  requireApproval as express.RequestHandler,
+  rateLimiter,
+  upload.single('file'),
+  async (req: AuthenticatedRequest, res) => {
   try {
     if (!req.file) {
       res.status(400).json({ success: false, error: 'No file uploaded' });
@@ -117,6 +234,24 @@ app.post('/api/extract', requireAuth, rateLimiter, upload.single('file'), async 
 
     console.log(`[Extract] Processing ${req.file.originalname} (${req.file.mimetype}, ${(req.file.size / 1024).toFixed(1)}KB)`);
     const result = await extractFromFile(req.file.buffer, req.file.mimetype, apiKey, model);
+
+    // Increment upload count on successful extraction
+    if (result.success && req.userId && SUPABASE_URL && SUPABASE_ANON_KEY) {
+      try {
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { error: rpcError } = await supabase.rpc('increment_uploads', { user_id_param: req.userId });
+        if (rpcError) {
+          // Fallback: direct update
+          await supabase
+            .from('profiles')
+            .update({ uploads_used: (req.userProfile?.uploads_used ?? 0) + 1 })
+            .eq('id', req.userId!);
+        }
+      } catch {
+        // Non-critical: don't fail the extraction response
+      }
+    }
+
     res.json(result);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Extraction failed';
