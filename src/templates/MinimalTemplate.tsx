@@ -47,19 +47,21 @@ export function MinimalTemplate({
     >
       {/* Top Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '40px' }}>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {company.companyLogo && (
-            <img src={company.companyLogo} alt="Logo" style={{ maxHeight: '60px', objectFit: 'contain', marginBottom: '8px' }} />
+            <img src={company.companyLogo} alt="Logo" style={{ height: '45px', width: 'auto', objectFit: 'contain' }} />
           )}
-          <div style={{ fontSize: '20px', fontWeight: '800', tracking: '-0.5px', textTransform: 'uppercase' }}>
-            {company.companyName || 'Dispatch Services'}
-          </div>
-          {company.companyHeaderText && (
-            <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 500, marginTop: '2px' }}>
-              {company.companyHeaderText}
+          <div>
+            <div style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.5px', textTransform: 'uppercase' }}>
+              {company.companyName || 'Dispatch Services'}
             </div>
-          )}
-          <div style={{ color: '#666', marginTop: '2px' }}>Dispatch Fee Invoice</div>
+            {company.companyHeaderText && (
+              <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 500, marginTop: '2px' }}>
+                {company.companyHeaderText}
+              </div>
+            )}
+            <div style={{ color: '#666', marginTop: '2px' }}>Dispatch Fee Invoice</div>
+          </div>
         </div>
         <div style={{ fontFamily: 'monospace', fontSize: '13px', textAlign: 'right' }}>
           <div>INV: {invoiceNumber}</div>
