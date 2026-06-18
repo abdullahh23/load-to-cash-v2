@@ -5,6 +5,7 @@ import { Truck, LayoutDashboard, FileText, Settings, LogOut, Shield, Menu, X, Ch
 import { useAuth } from '../contexts/AuthContext';
 import { DataProvider, useAppLoads } from '../contexts/DataContext';
 import { PrivacyModal } from '../components/PrivacyModal';
+import { OnboardingTour } from '../components/OnboardingTour';
 
 function UserLayoutInner() {
   const { signOut, profile, isAdmin } = useAuth();
@@ -227,6 +228,8 @@ function UserLayoutInner() {
 
       {/* First-login Privacy Modal */}
       <PrivacyModal />
+      {/* Step-by-step onboarding tour */}
+      <OnboardingTour />
     </div>
   );
 }
