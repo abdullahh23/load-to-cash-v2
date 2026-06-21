@@ -9,9 +9,11 @@ ALTER TABLE profiles ALTER COLUMN manual_load_limit SET DEFAULT 15;
 -- Add phone number column
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS phone text;
 
--- Update existing users who still have old defaults (2) to new defaults
-UPDATE profiles SET file_upload_limit = 20 WHERE file_upload_limit = 2 AND role != 'admin';
-UPDATE profiles SET manual_load_limit = 15 WHERE manual_load_limit = 2 AND role != 'admin';
+-- Update ALL non-admin users to correct limits
+UPDATE profiles SET file_upload_limit = 20 WHERE role != 'admin';
+UPDATE profiles SET manual_load_limit = 15 WHERE role != 'admin';
+-- Admin gets unlimited
+UPDATE profiles SET file_upload_limit = 0, manual_load_limit = 0 WHERE role = 'admin';
 
 -- Update signup trigger to capture phone number
 CREATE OR REPLACE FUNCTION public.handle_new_user()
