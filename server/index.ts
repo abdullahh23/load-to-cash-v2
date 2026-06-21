@@ -17,7 +17,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'LoadToCash <noreply@loadtocash.com>';
+const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'LoadToCash <notifications@loadtocash.online>';
 const ADMIN_NOTIFICATION_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || 'nickindispatch@gmail.com';
 
 
