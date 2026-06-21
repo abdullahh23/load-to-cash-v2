@@ -15,6 +15,8 @@ const PORT = process.env.PORT || 8787;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || '*';
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
 
 app.use(cors({ origin: CLIENT_ORIGIN === '*' ? true : CLIENT_ORIGIN, credentials: true }));
 app.use(express.json());
@@ -171,6 +173,59 @@ function rateLimiter(req: express.Request, res: express.Response, next: express.
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+/**
+ * DELETE /api/admin/delete-user/:userId
+ * Permanently deletes a user from Supabase Auth + their profile/data.
+ * Requires admin JWT + SUPABASE_SERVICE_ROLE_KEY on server.
+ */
+app.delete('/api/admin/delete-user/:userId',
+  requireAuth as express.RequestHandler,
+  async (req: AuthenticatedRequest, res) => {
+    // Only admins can delete users
+    if (req.userProfile?.role !== 'admin') {
+      res.status(403).json({ success: false, error: 'Forbidden' });
+      return;
+    }
+
+    if (!SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_URL) {
+      res.status(500).json({ success: false, error: 'Service role key not configured on server.' });
+      return;
+    }
+
+    const { userId } = req.params;
+
+    // Prevent admin from deleting themselves
+    if (userId === req.userId) {
+      res.status(400).json({ success: false, error: 'You cannot delete your own admin account.' });
+      return;
+    }
+
+    try {
+      // Use service role client (bypasses RLS)
+      const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      });
+
+      // Delete user from Supabase Auth (cascades to profile via DB trigger if set up)
+      const { error: authError } = await adminClient.auth.admin.deleteUser(userId);
+      if (authError) {
+        res.status(500).json({ success: false, error: authError.message });
+        return;
+      }
+
+      // Also manually delete profile row (safety net)
+      await adminClient.from('profiles').delete().eq('id', userId);
+
+      console.log(`[Admin] User ${userId} permanently deleted by admin ${req.userId}`);
+      res.json({ success: true });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Delete failed';
+      res.status(500).json({ success: false, error: msg });
+    }
+  }
+);
+
 
 // User quota endpoint
 app.get('/api/user/quota', requireAuth as express.RequestHandler, (req: AuthenticatedRequest, res) => {

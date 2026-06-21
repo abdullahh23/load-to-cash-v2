@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { fetchAdminUsers, suspendUser, updateUserManualLimit, updateUserFileLimit, setUserDisabled } from '../../lib/invoices';
+import { fetchAdminUsers, suspendUser, updateUserManualLimit, updateUserFileLimit, setUserDisabled, deleteUser } from '../../lib/invoices';
 import { useAuth } from '../../contexts/AuthContext';
-import { Users, AlertCircle, RefreshCw, Search, XCircle, Edit3, Save, FileUp, PenLine } from 'lucide-react';
+import { Users, AlertCircle, RefreshCw, Search, XCircle, Edit3, Save, FileUp, PenLine, Trash2 } from 'lucide-react';
+
 
 type AdminUser = Awaited<ReturnType<typeof fetchAdminUsers>>[number];
 
@@ -12,9 +13,12 @@ export function AdminUsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [editingManualLimit, setEditingManualLimit] = useState<string | null>(null);
-  const [editingFileLimit, setEditingFileLimit] = useState<string | null>(null);
-  const [manualLimitValue, setManualLimitValue] = useState('');
-  const [fileLimitValue, setFileLimitValue] = useState('');
+  const [editingFileLimit, setEditingFileLimit]   = useState<string | null>(null);
+  const [manualLimitValue, setManualLimitValue]   = useState('');
+  const [fileLimitValue, setFileLimitValue]       = useState('');
+  const [confirmDeleteId, setConfirmDeleteId]     = useState<string | null>(null);
+  const [deleting, setDeleting]                   = useState(false);
+
 
   const load = () => {
     setLoading(true);
@@ -44,6 +48,19 @@ export function AdminUsersPage() {
       load();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Update failed.');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    setDeleting(true);
+    try {
+      await deleteUser(userId);
+      setConfirmDeleteId(null);
+      load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Delete failed. Make sure SUPABASE_SERVICE_ROLE_KEY is set on the server.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -273,7 +290,36 @@ export function AdminUsersPage() {
                           {u.is_disabled ? 'Enable' : 'Disable'}
                         </button>
                       )}
+                      {u.role !== 'admin' && (
+                        confirmDeleteId === u.id ? (
+                          <div className="flex items-center gap-1">
+                            <span className="text-[10px] text-red-600 font-bold">Sure?</span>
+                            <button
+                              onClick={() => handleDeleteUser(u.id)}
+                              disabled={deleting}
+                              className="text-[10px] font-bold px-2 py-1.5 rounded-xl bg-red-600 text-white border border-red-700 hover:bg-red-700 transition-all disabled:opacity-50"
+                            >
+                              {deleting ? '...' : 'Yes, Delete'}
+                            </button>
+                            <button
+                              onClick={() => setConfirmDeleteId(null)}
+                              className="text-[10px] font-bold px-2 py-1.5 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition-all"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setConfirmDeleteId(u.id)}
+                            className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1.5 rounded-xl transition-all border bg-red-50 text-red-700 border-red-200 hover:bg-red-700 hover:text-white"
+                            title="Permanently delete user"
+                          >
+                            <Trash2 size={11} /> Delete
+                          </button>
+                        )
+                      )}
                     </div>
+
                   </td>
                 </tr>
               ))}

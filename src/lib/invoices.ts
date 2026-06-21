@@ -160,6 +160,20 @@ export async function updateUserLimit(userId: string, limit: number) {
   if (error) throw new Error(error.message.includes('column') ? 'Run the database migration first (003_approval_quota.sql)' : error.message);
 }
 
+
+
+/** Permanently delete a user -- cannot login again, must create new account */
+export async function deleteUser(userId: string): Promise<void> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) throw new Error('Not authenticated');
+  const apiBase = import.meta.env.VITE_API_URL || '';
+  const res = await fetch(${apiBase}/api/admin/delete-user/, {
+    method: 'DELETE',
+    headers: { 'Authorization': Bearer  },
+  });
+  const json = await res.json().catch(() => ({ success: false, error: 'Server error' }));
+  if (!json.success) throw new Error(json.error || 'Failed to delete user');
+}
 export async function updateUserManualLimit(userId: string, limit: number) {
   const { error } = await supabase.from('profiles').update({
     manual_load_limit: limit,
