@@ -333,10 +333,11 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-ink text-white font-sans overflow-x-hidden">
 
-      {/* Ambient glows */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-signal/8 rounded-full blur-[160px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-amberline/5 rounded-full blur-[120px]" />
+      {/* Ambient orbs + dot grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 dot-grid">
+        <div className="absolute -top-20 left-[15%] w-[700px] h-[700px] bg-signal rounded-full blur-[120px] opacity-[0.12]" />
+        <div className="absolute top-[40%] right-[10%] w-[500px] h-[500px] bg-purple-600 rounded-full blur-[120px] opacity-[0.08]" />
+        <div className="absolute bottom-[10%] left-[25%] w-[400px] h-[400px] bg-amberline rounded-full blur-[100px] opacity-[0.06]" />
       </div>
 
       {/* ════════════════ NAVBAR ════════════════ */}
@@ -358,12 +359,12 @@ export function LandingPage() {
               ))}
             </div>
             <div className="hidden md:flex items-center gap-3">
-              <Link to="/login" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white border border-white/10 hover:border-white/25 rounded-xl transition-all">Log In</Link>
-              <Link to="/signup" className="px-5 py-2.5 bg-signal hover:bg-teal-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-signal/25 flex items-center gap-2">
+              <Link to="/login" className="px-4 py-2 text-sm font-semibold text-slate-400 hover:text-white border border-white/10 hover:border-white/20 rounded-xl transition-all">Log In</Link>
+              <Link to="/signup" className="glow-btn px-5 py-2.5 text-white font-bold rounded-xl text-sm flex items-center gap-2">
                 <Sparkles size={14} /> Start Free Trial
               </Link>
             </div>
-            <button onClick={() => setMobileOpen(v => !v)} className="md:hidden text-slate-300 p-2">
+            <button onClick={() => setMobileOpen(v => !v)} className="md:hidden text-slate-400 p-2">
               {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -374,12 +375,12 @@ export function LandingPage() {
               className="md:hidden bg-ink/95 backdrop-blur-xl border-b border-white/5 px-4 pb-6 overflow-hidden">
               <div className="pt-4 space-y-1">
                 {['home', 'features', 'templates', 'workflow', 'about', 'contact'].map(item => (
-                  <a key={item} href={`#${item}`} onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 capitalize">{item}</a>
+                  <a key={item} href={`#${item}`} onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl text-slate-400 hover:text-signal hover:bg-white/5 capitalize">{item}</a>
                 ))}
               </div>
               <div className="pt-4 mt-2 border-t border-white/5 flex flex-col gap-3">
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="block text-center py-3 border border-white/10 rounded-xl text-sm font-semibold text-slate-300">Log In</Link>
-                <Link to="/signup" onClick={() => setMobileOpen(false)} className="block text-center py-3 bg-signal rounded-xl text-sm font-bold text-white">Start Free Trial</Link>
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="block text-center py-3 border border-white/10 rounded-xl text-sm font-semibold text-slate-400">Log In</Link>
+                <Link to="/signup" onClick={() => setMobileOpen(false)} className="block text-center py-3 glow-btn rounded-xl text-sm font-bold text-white">Start Free Trial</Link>
               </div>
             </motion.div>
           )}
@@ -388,14 +389,16 @@ export function LandingPage() {
 
       {/* ════════════════ HERO ════════════════ */}
       <section id="home" className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10">
+        {/* No light gradient in dark theme */}
+
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <div className="inline-flex items-center gap-2 bg-signal/10 border border-signal/20 text-signal px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
-                <Sparkles size={12} /> AI-Powered · Zero Manual Entry
+                <Sparkles size={12} className="animate-pulse" /> AI-Powered · Zero Manual Entry
               </div>
               <h1 className="text-5xl lg:text-6xl font-black text-white leading-[1.05] tracking-tight">
-                Turn Rate Confirmations<br />into <span className="text-signal drop-shadow-[0_0_20px_rgba(13,148,136,0.6)]">Cash</span> Instantly.
+                Turn Rate Confirmations<br />into <span className="text-signal">Cash</span> Instantly.
               </h1>
             </motion.div>
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}
@@ -404,10 +407,10 @@ export function LandingPage() {
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
               className="flex flex-col sm:flex-row gap-4">
-              <button onClick={() => navigate('/signup')} className="group px-8 py-4 bg-signal hover:bg-teal-500 text-white font-extrabold rounded-xl shadow-xl shadow-signal/30 transition-all flex items-center justify-center gap-3 text-base">
+              <button onClick={() => navigate('/signup')} className="group glow-btn px-8 py-4 text-white font-extrabold rounded-xl transition-all flex items-center justify-center gap-3 text-base">
                 Get Started Free <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button onClick={() => navigate('/login')} className="px-8 py-4 border border-white/10 hover:border-signal/40 text-slate-300 hover:text-white font-bold rounded-xl transition-all">
+              <button onClick={() => navigate('/login')} className="glass px-8 py-4 text-slate-300 hover:text-white font-bold rounded-xl transition-all">
                 Login to Dashboard
               </button>
             </motion.div>
@@ -416,24 +419,73 @@ export function LandingPage() {
               {[{ val: 500, suf: '+', label: 'Dispatchers' }, { val: 10000, suf: '+', label: 'Invoices Generated' }, { val: 99, suf: '.9%', label: 'Uptime' }].map(s => (
                 <div key={s.label}>
                   <div className="text-2xl font-black text-signal"><Counter target={s.val} suffix={s.suf} /></div>
-                  <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
+                  <div className="text-xs text-slate-400 mt-0.5">{s.label}</div>
                 </div>
               ))}
             </motion.div>
           </div>
           <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="relative">
-            <div className="absolute -inset-4 bg-signal/10 rounded-3xl blur-xl" />
-            <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-              <img src="https://www.upperinc.com/wp-content/uploads/2024/02/fleet-dispatchig-upper-1024x585.jpg" alt="Fleet dispatching software dashboard" className="w-full h-[420px] object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute bottom-6 left-6 right-6 bg-slate-900/90 backdrop-blur border border-signal/20 p-4 rounded-xl flex items-center gap-4 shadow-xl">
-                <div className="w-12 h-12 bg-signal/20 border border-signal/30 text-signal rounded-lg flex items-center justify-center shrink-0">
-                  <Cpu size={22} />
+            {/* Browser-style dashboard mockup — dark dashboard inside light page for contrast */}
+            <div className="relative glass-card shadow-2xl rounded-2xl overflow-hidden">
+              {/* Browser chrome */}
+              <div className="flex items-center gap-2 px-4 py-3 bg-slate-900/80 border-b border-white/5">
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                </div>
+                <div className="flex-1 mx-3 h-6 bg-white/5 rounded-md flex items-center px-3">
+                  <span className="text-[10px] text-slate-500">loadtocash.online/dashboard</span>
+                </div>
+              </div>
+              {/* Dashboard content — stays dark */}
+              <div className="p-5 bg-gradient-to-br from-slate-900 to-slate-950 space-y-4">
+                {/* Dashboard header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs text-slate-500 uppercase tracking-widest">Weekly Dashboard</div>
+                    <div className="text-lg font-black text-white mt-0.5">Week of June 16, 2026</div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="h-8 px-3 bg-signal/10 border border-signal/30 rounded-lg flex items-center gap-1.5 text-xs text-signal font-bold"><UploadCloud size={12} /> Upload PDF</div>
+                    <div className="h-8 px-3 bg-white/5 border border-white/10 rounded-lg flex items-center text-xs text-slate-400 font-medium">+ Add Load</div>
+                  </div>
+                </div>
+                {/* Stats row */}
+                <div className="grid grid-cols-3 gap-3">
+                  {[{ label: 'Gross Revenue', val: '$7,450.00', color: 'text-white' }, { label: 'Dispatch Fee (6%)', val: '$447.00', color: 'text-signal' }, { label: 'Total Loads', val: '4', color: 'text-amberline' }].map(s => (
+                    <div key={s.label} className="glass-card rounded-xl p-3">
+                      <div className="text-[9px] text-slate-500 uppercase tracking-widest">{s.label}</div>
+                      <div className={`text-base font-black mt-1 ${s.color}`}>{s.val}</div>
+                    </div>
+                  ))}
+                </div>
+                {/* Mini table */}
+                <div className="glass-card rounded-xl overflow-hidden">
+                  <div className="grid grid-cols-4 gap-0 text-[10px] font-bold text-slate-400 px-3 py-2 bg-white/[0.02] border-b border-white/5 uppercase tracking-wider">
+                    <span>Load #</span><span>Broker</span><span>Route</span><span className="text-right">Amount</span>
+                  </div>
+                  {[{ ln: 'OGRE45711', broker: 'CH Robinson', route: 'Dallas → Memphis', amt: '$2,150' },
+                    { ln: 'XPO88234', broker: 'TQL Freight', route: 'Houston → Atlanta', amt: '$1,850' },
+                    { ln: 'JBH99102', broker: 'Echo Global', route: 'Phoenix → LA', amt: '$1,950' }].map((row, i) => (
+                    <div key={i} className={`grid grid-cols-4 gap-0 text-[10px] px-3 py-2 ${i % 2 ? 'bg-white/[0.01]' : ''} border-b border-white/[0.03]`}>
+                      <span className="font-bold text-white">{row.ln}</span>
+                      <span className="text-slate-400">{row.broker}</span>
+                      <span className="text-slate-500">{row.route}</span>
+                      <span className="text-right font-bold text-signal">{row.amt}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Floating AI badge */}
+              <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute bottom-4 left-4 right-4 glass rounded-xl p-3 flex items-center gap-3 shadow-xl">
+                <div className="w-10 h-10 bg-signal/20 border border-signal/30 text-signal rounded-lg flex items-center justify-center shrink-0">
+                  <Cpu size={18} />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-white uppercase tracking-wider">AI Processor Active</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Rate confirmation scanned — invoice ready in 8 seconds</div>
+                  <div className="text-[10px] font-bold text-white uppercase tracking-wider">AI Processor Active</div>
+                  <div className="text-[9px] text-slate-400 mt-0.5">Rate confirmation scanned — invoice ready</div>
                 </div>
                 <div className="ml-auto flex gap-1">
                   {[0, 1, 2].map(i => (
@@ -447,7 +499,6 @@ export function LandingPage() {
       </section>
 
       {/* ════════════════ SEO KEYWORD SECTION — Free Dispatch Templates ════════════════ */}
-      {/* This section is keyword-optimized for Google search ranking */}
       <section className="relative z-10 py-16 px-4 sm:px-6 lg:px-8 bg-slate-900/30 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -455,7 +506,6 @@ export function LandingPage() {
             {/* Left — SEO Text Content */}
             <FadeIn>
               <div className="space-y-5">
-                {/* This H2 is what Google reads for ranking */}
                 <h2 className="text-3xl lg:text-4xl font-black text-white leading-tight">
                   Free Dispatch Invoice Templates<br />
                   <span className="text-signal">for Freight Dispatchers</span>
@@ -471,8 +521,8 @@ export function LandingPage() {
                     'Download as PDF instantly — no design skills needed',
                     'Works for owner-operators, fleet managers & dispatchers',
                   ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-slate-300">
-                      <div className="w-5 h-5 rounded-full bg-signal/20 border border-signal/40 flex items-center justify-center shrink-0 mt-0.5">
+                    <li key={i} className="flex items-start gap-3 text-sm text-slate-400">
+                      <div className="w-5 h-5 rounded-full bg-signal/10 border border-signal/30 flex items-center justify-center shrink-0 mt-0.5">
                         <CheckCircle size={11} className="text-signal" />
                       </div>
                       {item}
@@ -480,10 +530,10 @@ export function LandingPage() {
                   ))}
                 </ul>
                 <div className="flex flex-wrap gap-3 pt-2">
-                  <button onClick={() => navigate('/signup')} className="px-6 py-3 bg-signal hover:bg-teal-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg flex items-center gap-2">
+                  <button onClick={() => navigate('/signup')} className="glow-btn px-6 py-3 text-white font-bold rounded-xl text-sm transition-all flex items-center gap-2">
                     <FileText size={15} /> Get Free Templates
                   </button>
-                  <a href="#templates" className="px-6 py-3 border border-white/10 hover:border-signal/40 text-slate-300 hover:text-white font-semibold rounded-xl text-sm transition-all">
+                  <a href="#templates" className="glass px-6 py-3 text-slate-300 hover:text-white font-semibold rounded-xl text-sm transition-all">
                     Preview Templates →
                   </a>
                 </div>
@@ -494,18 +544,18 @@ export function LandingPage() {
             <FadeIn delay={0.2}>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { name: 'Corporate Classic', tag: 'FREE', color: 'border-blue-500/30 bg-blue-500/5', tagColor: 'bg-blue-500', desc: 'Navy header, gold accents. Most popular.' },
-                  { name: 'Modern Minimalist', tag: 'FREE', color: 'border-slate-500/30 bg-slate-500/5', tagColor: 'bg-slate-500', desc: 'Clean borderless design. Simple & sharp.' },
-                  { name: 'Executive Cargo', tag: 'FREE', color: 'border-amberline/30 bg-amberline/5', tagColor: 'bg-amberline', desc: 'Dark header with amber totals.' },
-                  { name: 'Emerald Steel', tag: 'FREE', color: 'border-signal/30 bg-signal/5', tagColor: 'bg-signal', desc: 'Bold teal system billing style.' },
+                  { name: 'Corporate Classic', tag: 'FREE', color: 'border-white/10 glass-card', tagColor: 'bg-blue-500', desc: 'Navy header, gold accents. Most popular.' },
+                  { name: 'Modern Minimalist', tag: 'FREE', color: 'border-white/10 glass-card', tagColor: 'bg-slate-500', desc: 'Clean borderless design. Simple & sharp.' },
+                  { name: 'Executive Cargo', tag: 'FREE', color: 'border-white/10 glass-card', tagColor: 'bg-amberline', desc: 'Dark header with amber totals.' },
+                  { name: 'Emerald Steel', tag: 'FREE', color: 'border-white/10 glass-card', tagColor: 'bg-signal', desc: 'Bold teal system billing style.' },
                 ].map((t, i) => (
-                  <div key={i} className={`rounded-2xl border p-5 ${t.color} hover:-translate-y-1 transition-all duration-200 cursor-pointer`} onClick={() => navigate('/signup')}>
+                  <div key={i} className={`rounded-2xl border p-5 hover:shadow-lg ${t.color} hover:-translate-y-1 transition-all duration-200 cursor-pointer`} onClick={() => navigate('/signup')}>
                     <div className="flex items-start justify-between mb-3">
                       <div className={`text-[10px] font-black px-2.5 py-1 rounded-full text-white ${t.tagColor}`}>{t.tag}</div>
                       <FileText size={16} className="text-slate-500" />
                     </div>
                     <div className="font-bold text-white text-sm mb-1">{t.name}</div>
-                    <div className="text-xs text-slate-500 leading-relaxed">{t.desc}</div>
+                    <div className="text-xs text-slate-400 leading-relaxed">{t.desc}</div>
                     <div className="mt-3 text-xs text-signal font-semibold flex items-center gap-1">
                       Use for free <ArrowRight size={11} />
                     </div>
@@ -515,10 +565,10 @@ export function LandingPage() {
             </FadeIn>
           </div>
 
-          {/* SEO keyword tags — visible to Google, useful to users */}
+          {/* SEO keyword tags */}
           <FadeIn delay={0.3}>
             <div className="mt-10 pt-8 border-t border-white/5">
-              <p className="text-xs text-slate-600 uppercase tracking-widest font-bold mb-4 text-center">Also searched for</p>
+              <p className="text-xs text-slate-400 uppercase tracking-widest font-bold mb-4 text-center">Also searched for</p>
               <div className="flex flex-wrap justify-center gap-2">
                 {[
                   'free dispatch invoice template',
@@ -546,11 +596,11 @@ export function LandingPage() {
       <section className="relative z-10 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <FadeIn>
-            <p className="text-center text-xs text-slate-500 uppercase tracking-widest font-bold mb-8">Why dispatchers switch to Load-to-Cash</p>
+            <p className="text-center text-xs text-slate-400 uppercase tracking-widest font-bold mb-8">Why dispatchers switch to Load-to-Cash</p>
           </FadeIn>
           <AnimatePresence mode="wait">
             <motion.div key={activeQuote} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }}
-              className={`border rounded-2xl p-8 flex items-start gap-6 ${quotes[activeQuote].bg}`}>
+              className={`${quotes[activeQuote].bg} border rounded-2xl p-8 flex items-start gap-6`}>
               <Quote size={28} className={`shrink-0 mt-1 ${quotes[activeQuote].color}`} />
               <p className={`text-xl font-bold leading-relaxed ${quotes[activeQuote].color}`}>{quotes[activeQuote].text}</p>
               {(() => { const Icon = quotes[activeQuote].icon; return <Icon size={32} className={`shrink-0 ml-auto mt-1 ${quotes[activeQuote].color} opacity-60`} />; })()}
@@ -558,7 +608,7 @@ export function LandingPage() {
           </AnimatePresence>
           <div className="flex justify-center gap-2 mt-6">
             {quotes.map((_, i) => (
-              <button key={i} onClick={() => setActiveQuote(i)} className={`rounded-full transition-all ${i === activeQuote ? 'w-6 h-2 bg-signal' : 'w-2 h-2 bg-white/20'}`} />
+              <button key={i} onClick={() => setActiveQuote(i)} className={`rounded-full transition-all ${i === activeQuote ? 'w-6 h-2 bg-signal' : 'w-2 h-2 bg-slate-600'}`} />
             ))}
           </div>
         </div>
@@ -568,20 +618,20 @@ export function LandingPage() {
             const Icon = q.icon;
             return (
               <FadeIn key={i} delay={i * 0.08}>
-                <div className={`border rounded-xl p-5 flex items-start gap-4 h-full ${q.bg}`}>
+                <div className={`${q.bg} border rounded-xl p-5 flex items-start gap-4 h-full`}>
                   <Icon size={18} className={`shrink-0 mt-0.5 ${q.color}`} />
-                  <p className="text-sm text-slate-300 leading-relaxed">{q.text}</p>
+                  <p className="text-sm text-slate-400 leading-relaxed">{q.text}</p>
                 </div>
               </FadeIn>
             );
           })}
           <FadeIn delay={0.45}>
-            <div className="border border-signal/30 bg-signal/10 rounded-xl p-5 flex flex-col gap-4 justify-between h-full">
+            <div className="glass-card border border-signal/30 rounded-xl p-5 flex flex-col gap-4 justify-between h-full">
               <div className="flex items-start gap-4">
                 <Sparkles size={18} className="shrink-0 mt-0.5 text-signal" />
-                <p className="text-sm text-slate-300 leading-relaxed">Ready to stop wasting time? Join 500+ dispatchers already saving 3+ hours every week.</p>
+                <p className="text-sm text-slate-400 leading-relaxed">Ready to stop wasting time? Join 500+ dispatchers already saving 3+ hours every week.</p>
               </div>
-              <button onClick={() => navigate('/signup')} className="px-5 py-2.5 bg-signal hover:bg-teal-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2">
+              <button onClick={() => navigate('/signup')} className="glow-btn px-5 py-2.5 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2">
                 Start Free <ArrowRight size={12} />
               </button>
             </div>
@@ -590,11 +640,11 @@ export function LandingPage() {
       </section>
 
       {/* ════════════════ HOW IT WORKS ════════════════ */}
-      <section id="features" className="relative z-10 py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/50 border-y border-white/5">
+      <section id="features" className="relative z-10 py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/30 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <FadeIn className="text-center mb-16">
             <p className="text-xs text-signal uppercase tracking-widest font-bold mb-3">Simple 5-Step Process</p>
-            <h2 className="text-4xl font-black text-white">How It Works</h2>
+            <h2 className="text-4xl lg:text-5xl font-black text-white">How It Works</h2>
             <p className="text-slate-400 mt-3 max-w-xl mx-auto">From upload to invoice in under 60 seconds. No training required.</p>
           </FadeIn>
           <div className="relative grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -602,14 +652,14 @@ export function LandingPage() {
               const Icon = step.icon;
               return (
                 <FadeIn key={i} delay={i * 0.1}>
-                  <div className="relative group bg-slate-900 border border-white/5 hover:border-signal/30 rounded-2xl p-6 text-left transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-signal/5 h-full flex flex-col">
+                  <div className="relative group glass-card gradient-border hover:shadow-lg rounded-2xl p-6 text-left transition-all hover:-translate-y-1 h-full flex flex-col">
                     <div className="w-12 h-12 bg-signal/10 border border-signal/20 text-signal rounded-xl flex items-center justify-center mb-4 group-hover:bg-signal group-hover:text-white transition-all">
                       <Icon size={22} />
                     </div>
-                    <div className="text-xs text-slate-500 font-bold mb-2 uppercase tracking-wider">Step {i + 1}</div>
+                    <div className="text-xs text-slate-400 font-bold mb-2 uppercase tracking-wider">Step {i + 1}</div>
                     <h3 className="font-bold text-white mb-2">{step.title}</h3>
                     <p className="text-xs text-slate-400 leading-relaxed flex-1">{step.desc}</p>
-                    {i < steps.length - 1 && <div className="hidden lg:block absolute top-8 -right-3 text-slate-600 z-10"><ChevronRight size={20} /></div>}
+                    {i < steps.length - 1 && <div className="hidden lg:block absolute top-8 -right-3 text-slate-400 z-10"><ChevronRight size={20} /></div>}
                   </div>
                 </FadeIn>
               );
@@ -623,13 +673,13 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <FadeIn className="text-center mb-16">
             <p className="text-xs text-signal uppercase tracking-widest font-bold mb-3">4 Premium Designs</p>
-            <h2 className="text-4xl font-black text-white">Choose Your Invoice Style</h2>
+            <h2 className="text-4xl lg:text-5xl font-black text-white">Choose Your Invoice Style</h2>
             <p className="text-slate-400 mt-3 max-w-xl mx-auto">All templates include your company branding, carrier details, dispatch fee breakdown, and payment terms. Click to preview.</p>
           </FadeIn>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {templates.map((t, i) => (
               <FadeIn key={t.id} delay={i * 0.1}>
-                <div className="group bg-slate-900 border border-white/5 hover:border-signal/40 rounded-2xl overflow-hidden transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-signal/10 flex flex-col">
+                <div className="group glass-card hover:border-signal/40 hover:shadow-xl rounded-2xl overflow-hidden transition-all hover:-translate-y-2 flex flex-col">
                   {/* Template mini-preview */}
                   <div className="relative overflow-hidden bg-white p-3 cursor-pointer" onClick={() => setPreviewTemplate(t)}>
                     <div className="pointer-events-none" style={{ transform: 'scale(0.85)', transformOrigin: 'top center' }}>
@@ -643,12 +693,12 @@ export function LandingPage() {
                     </div>
                     <div className="absolute top-2 right-2 bg-signal text-white text-[9px] font-bold px-2 py-0.5 rounded-full">{t.badge}</div>
                   </div>
-                  <div className="p-5 flex flex-col flex-1">
+                  <div className="p-5 flex flex-col flex-1 border-t border-white/5">
                     <h3 className="font-bold text-white mb-1">{t.name}</h3>
                     <p className="text-xs text-slate-400 leading-relaxed flex-1">{t.desc}</p>
                     <div className="flex gap-2 mt-4">
                       <button onClick={() => setPreviewTemplate(t)}
-                        className="flex-1 py-2.5 border border-signal/30 hover:bg-signal/10 text-signal text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5">
+                        className="flex-1 py-2.5 border border-signal/30 hover:bg-signal/5 text-signal text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5">
                         <Eye size={12} /> Preview
                       </button>
                       <button onClick={() => navigate('/signup')}
@@ -667,21 +717,21 @@ export function LandingPage() {
       {/* ════════════════ WORKFLOW DIAGRAM ════════════════ */}
       <section id="workflow" className="relative z-10 py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/50 border-y border-white/5 overflow-hidden">
         {/* Background grid */}
-        <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'linear-gradient(rgba(13,148,136,1) 1px, transparent 1px), linear-gradient(90deg, rgba(13,148,136,1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(13,148,136,1) 1px, transparent 1px), linear-gradient(90deg, rgba(13,148,136,1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
         <div className="max-w-7xl mx-auto relative z-10">
           <FadeIn className="text-center mb-20">
             <p className="text-xs text-signal uppercase tracking-widest font-bold mb-3">Step-by-Step Process</p>
-            <h2 className="text-4xl font-black text-white">Your Dispatch Workflow</h2>
+            <h2 className="text-4xl lg:text-5xl font-black text-white">Your Dispatch Workflow</h2>
             <p className="text-slate-400 mt-3 max-w-xl mx-auto">From a raw PDF to a paid invoice — everything automated in one clean flow.</p>
           </FadeIn>
 
           {/* Row 1: Steps 1-2-3 → */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {[
-              { step: '01', icon: UploadCloud, title: 'Upload Rate Confirmation', desc: "Drag & drop your carrier's rate confirmation PDF. Any format, any broker accepted.", color: 'from-signal/20 to-signal/5', border: 'border-signal/30', iconBg: 'bg-signal', tag: 'START', tagColor: 'bg-signal text-white', detail: 'Supports PDF, scans & multi-page docs' },
-              { step: '02', icon: Cpu, title: 'AI Reads & Extracts Data', desc: 'AI engine reads the PDF and instantly fills carrier name, load #, broker, route, and gross amount.', color: 'from-purple-500/20 to-purple-500/5', border: 'border-purple-500/30', iconBg: 'bg-purple-500', tag: 'AI AUTOMATED', tagColor: 'bg-purple-500 text-white', detail: '< 10 seconds processing time' },
-              { step: '03', icon: CheckSquare, title: 'Review & Save to Dashboard', desc: 'Verify the auto-filled load details. Edit anything if needed, then save to your weekly tracker.', color: 'from-blue-500/20 to-blue-500/5', border: 'border-blue-500/30', iconBg: 'bg-blue-500', tag: 'VERIFY', tagColor: 'bg-blue-500 text-white', detail: 'Loads saved to weekly load tracker' },
+              { step: '01', icon: UploadCloud, title: 'Upload Rate Confirmation', desc: "Drag & drop your carrier's rate confirmation PDF. Any format, any broker accepted.", color: 'from-signal/10 to-signal/5', border: 'border-signal/30', iconBg: 'bg-signal', tag: 'START', tagColor: 'bg-signal text-white', detail: 'Supports PDF, scans & multi-page docs' },
+              { step: '02', icon: Cpu, title: 'AI Reads & Extracts Data', desc: 'AI engine reads the PDF and instantly fills carrier name, load #, broker, route, and gross amount.', color: 'from-purple-500/10 to-purple-500/5', border: 'border-purple-500/30', iconBg: 'bg-purple-500', tag: 'AI AUTOMATED', tagColor: 'bg-purple-500 text-white', detail: '< 10 seconds processing time' },
+              { step: '03', icon: CheckSquare, title: 'Review & Save to Dashboard', desc: 'Verify the auto-filled load details. Edit anything if needed, then save to your weekly tracker.', color: 'from-blue-500/10 to-blue-500/5', border: 'border-blue-500/30', iconBg: 'bg-blue-500', tag: 'VERIFY', tagColor: 'bg-blue-500 text-white', detail: 'Loads saved to weekly load tracker' },
             ].map((item, i) => {
               const Icon = item.icon;
               return (
@@ -694,7 +744,7 @@ export function LandingPage() {
                     </div>
                     <h3 className="text-white font-black text-base mb-2">{item.title}</h3>
                     <p className="text-slate-400 text-sm leading-relaxed mb-4">{item.desc}</p>
-                    <div className="flex items-center gap-2 text-xs text-slate-500 border-t border-white/5 pt-3">
+                    <div className="flex items-center gap-2 text-xs text-slate-500 border-t border-white/10 pt-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-signal shrink-0" />{item.detail}
                     </div>
                   </div>
@@ -724,9 +774,9 @@ export function LandingPage() {
           {/* Row 2: Steps 4-5-6 ← (reversed) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { step: '06', icon: TrendingUp, title: 'Track Payments & History', desc: 'Monitor payment status in Carrier History. Mark paid, track earnings, see all carriers at a glance.', color: 'from-emerald-500/20 to-emerald-500/5', border: 'border-emerald-500/30', iconBg: 'bg-emerald-500', tag: 'TRACK', tagColor: 'bg-emerald-500 text-white', detail: 'Full carrier history & payment dashboard' },
-              { step: '05', icon: DollarSign, title: 'Download & Send Invoice', desc: 'Download your professional PDF and send it to the carrier. Dispatch fee auto-calculated at 6%.', color: 'from-amberline/20 to-amberline/5', border: 'border-amberline/30', iconBg: 'bg-amberline', tag: 'GET PAID', tagColor: 'bg-amberline text-ink', detail: 'One-click PDF export, ready to send' },
-              { step: '04', icon: FileSpreadsheet, title: 'Select Invoice Template', desc: 'Pick from 4 professional invoice templates. Company info, carrier, and load table fill automatically.', color: 'from-orange-500/20 to-orange-500/5', border: 'border-orange-500/30', iconBg: 'bg-orange-500', tag: 'DESIGN', tagColor: 'bg-orange-500 text-white', detail: '4 premium templates available' },
+              { step: '06', icon: TrendingUp, title: 'Track Payments & History', desc: 'Monitor payment status in Carrier History. Mark paid, track earnings, see all carriers at a glance.', color: 'from-emerald-500/10 to-emerald-500/5', border: 'border-emerald-500/30', iconBg: 'bg-emerald-500', tag: 'TRACK', tagColor: 'bg-emerald-500 text-white', detail: 'Full carrier history & payment dashboard' },
+              { step: '05', icon: DollarSign, title: 'Download & Send Invoice', desc: 'Download your professional PDF and send it to the carrier. Dispatch fee auto-calculated at 6%.', color: 'from-amberline/10 to-amberline/5', border: 'border-amberline/30', iconBg: 'bg-amberline', tag: 'GET PAID', tagColor: 'bg-amberline text-ink', detail: 'One-click PDF export, ready to send' },
+              { step: '04', icon: FileSpreadsheet, title: 'Select Invoice Template', desc: 'Pick from 4 professional invoice templates. Company info, carrier, and load table fill automatically.', color: 'from-orange-500/10 to-orange-500/5', border: 'border-orange-500/30', iconBg: 'bg-orange-500', tag: 'DESIGN', tagColor: 'bg-orange-500 text-white', detail: '4 premium templates available' },
             ].map((item, i) => {
               const Icon = item.icon;
               return (
@@ -739,7 +789,7 @@ export function LandingPage() {
                     </div>
                     <h3 className="text-white font-black text-base mb-2">{item.title}</h3>
                     <p className="text-slate-400 text-sm leading-relaxed mb-4">{item.desc}</p>
-                    <div className="flex items-center gap-2 text-xs text-slate-500 border-t border-white/5 pt-3">
+                    <div className="flex items-center gap-2 text-xs text-slate-500 border-t border-white/10 pt-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-amberline shrink-0" />{item.detail}
                     </div>
                   </div>
@@ -755,18 +805,18 @@ export function LandingPage() {
 
           {/* Bottom CTA strip */}
           <FadeIn delay={1.0}>
-            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 bg-slate-900 border border-signal/20 rounded-2xl px-8 py-5">
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 glass border border-signal/20 rounded-2xl px-8 py-5">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-signal/10 border border-signal/20 rounded-xl flex items-center justify-center">
                   <Zap size={18} className="text-signal" />
                 </div>
                 <div>
                   <div className="text-white font-bold text-sm">Total time: Under 2 minutes</div>
-                  <div className="text-slate-500 text-xs">From PDF upload to professional invoice ready to send</div>
+                  <div className="text-slate-400 text-xs">From PDF upload to professional invoice ready to send</div>
                 </div>
               </div>
-              <div className="hidden sm:block w-px h-10 bg-white/5" />
-              <button onClick={() => navigate('/signup')} className="px-6 py-3 bg-signal hover:bg-teal-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-signal/20 flex items-center gap-2 shrink-0">
+              <div className="hidden sm:block w-px h-10 bg-white/10" />
+              <button onClick={() => navigate('/signup')} className="glow-btn px-6 py-3 text-white font-bold rounded-xl text-sm transition-all flex items-center gap-2 shrink-0">
                 Try the Workflow Free <ArrowRight size={14} />
               </button>
             </div>
@@ -779,7 +829,7 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <FadeIn className="text-center mb-16">
             <p className="text-xs text-signal uppercase tracking-widest font-bold mb-3">Built for Growth</p>
-            <h2 className="text-4xl font-black text-white">Why Load-to-Cash Wins</h2>
+            <h2 className="text-4xl lg:text-5xl font-black text-white">Why Load-to-Cash Wins</h2>
             <p className="text-slate-400 mt-3 max-w-xl mx-auto">Every feature is designed around how real freight dispatchers actually work — and what slows them down.</p>
           </FadeIn>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -787,7 +837,7 @@ export function LandingPage() {
               const Icon = b.icon;
               return (
                 <FadeIn key={i} delay={i * 0.08}>
-                  <div className="group bg-slate-900 border border-white/5 hover:border-signal/30 rounded-2xl p-7 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-signal/5 h-full">
+                  <div className="group glass-card gradient-border hover:shadow-lg rounded-2xl p-7 transition-all hover:-translate-y-1 h-full">
                     <div className="w-12 h-12 bg-signal/10 border border-signal/20 text-signal rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                       <Icon size={22} />
                     </div>
@@ -802,16 +852,16 @@ export function LandingPage() {
       </section>
 
       {/* ════════════════ TESTIMONIALS ════════════════ */}
-      <section className="relative z-10 py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/50 border-y border-white/5">
+      <section className="relative z-10 py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/30 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <FadeIn className="text-center mb-16">
             <p className="text-xs text-signal uppercase tracking-widest font-bold mb-3">Real Dispatchers</p>
-            <h2 className="text-4xl font-black text-white">What They're Saying</h2>
+            <h2 className="text-4xl lg:text-5xl font-black text-white">What They're Saying</h2>
           </FadeIn>
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((t, i) => (
               <FadeIn key={i} delay={i * 0.12}>
-                <div className="bg-slate-900 border border-white/5 hover:border-signal/20 rounded-2xl p-7 transition-all h-full flex flex-col">
+                <div className="glass-card hover:border-signal/20 rounded-2xl p-7 transition-all h-full flex flex-col">
                   <div className="flex gap-1 mb-4">
                     {Array.from({ length: t.stars }).map((_, j) => <Star key={j} size={14} className="text-amberline fill-amberline" />)}
                   </div>
@@ -831,22 +881,45 @@ export function LandingPage() {
       <section id="about" className="relative z-10 py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
           <FadeIn>
-            <div className="relative rounded-2xl overflow-hidden border border-white/10">
-              <img src="https://freightgirlz.com/wp-content/uploads/2026/01/20260113_1019_Image-Generation_simple_compose_01kew5v9sffz3t4pa08nkt465a.png" alt="Freight dispatcher at work" className="w-full h-80 object-cover object-top" />
-              <div className="absolute inset-0 bg-gradient-to-r from-ink/60 to-transparent" />
+            <div className="relative glass-card rounded-2xl overflow-hidden p-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-signal rounded-xl flex items-center justify-center shadow-lg shadow-signal/30">
+                    <Truck size={24} className="text-white" />
+                  </div>
+                  <div>
+                    <div className="text-lg font-black text-white">LoadToCash</div>
+                    <div className="text-xs text-signal font-bold uppercase tracking-widest">AI Dispatch Billing</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {['Upload PDF', 'AI Extraction', 'Invoice Generation', 'Payment Tracking'].map((f, i) => (
+                    <div key={i} className="glass rounded-xl p-4 flex items-center gap-3">
+                      <div className="w-8 h-8 bg-signal/10 border border-signal/20 rounded-lg flex items-center justify-center text-signal">
+                        <CheckCircle size={14} />
+                      </div>
+                      <span className="text-sm text-slate-400 font-medium">{f}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-slate-400 pt-2">
+                  <Shield size={12} className="text-signal" />
+                  <span>AWS-encrypted · SOC2 compliant · 99.9% uptime</span>
+                </div>
+              </div>
             </div>
           </FadeIn>
           <FadeIn delay={0.2}>
             <div className="space-y-6">
               <p className="text-xs text-signal uppercase tracking-widest font-bold">Our Story</p>
-              <h2 className="text-4xl font-black text-white">Built by Dispatchers,<br />for Dispatchers</h2>
+              <h2 className="text-4xl lg:text-5xl font-black text-white">Built by Dispatchers,<br />for Dispatchers</h2>
               <p className="text-slate-400 leading-relaxed">We were tired of watching owner-operators and independent dispatchers spend hours every week doing data entry that a computer should handle. Load-to-Cash was built from real dispatching pain — manual invoice errors, billing disputes, and Sunday-night paperwork marathons.</p>
               <p className="text-slate-400 leading-relaxed">Our mission is simple: <strong className="text-white">zero manual typing</strong>. Upload your rate confirmation. We handle the rest.</p>
               <div className="grid grid-cols-3 gap-4 pt-4">
                 {[{ val: 500, suf: '+', label: 'Active Users' }, { val: 10000, suf: '+', label: 'Invoices Made' }, { val: 99, suf: '.9%', label: 'Uptime' }].map(s => (
-                  <div key={s.label} className="bg-slate-900 border border-white/5 rounded-xl p-4 text-center">
+                  <div key={s.label} className="glass-card rounded-xl p-4 text-center">
                     <div className="text-2xl font-black text-signal"><Counter target={s.val} suffix={s.suf} /></div>
-                    <div className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider">{s.label}</div>
+                    <div className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider">{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -862,7 +935,7 @@ export function LandingPage() {
             <div className="space-y-8">
               <div>
                 <p className="text-xs text-signal uppercase tracking-widest font-bold mb-3">Get in Touch</p>
-                <h2 className="text-4xl font-black text-white">Contact Us</h2>
+                <h2 className="text-4xl lg:text-5xl font-black text-white">Contact Us</h2>
                 <p className="text-slate-400 mt-3">Have questions? We'd love to hear from you.</p>
               </div>
               <div className="space-y-6">
@@ -872,7 +945,7 @@ export function LandingPage() {
                       <item.icon size={20} />
                     </div>
                     <div>
-                      <div className="text-xs text-slate-500 uppercase tracking-wider">{item.label}</div>
+                      <div className="text-xs text-slate-400 uppercase tracking-wider">{item.label}</div>
                       <div className="text-white font-semibold mt-0.5">{item.val}</div>
                     </div>
                   </div>
@@ -880,25 +953,25 @@ export function LandingPage() {
               </div>
               <div className="p-5 bg-signal/5 border border-signal/20 rounded-2xl flex gap-4 items-start">
                 <Shield size={20} className="text-signal shrink-0 mt-0.5" />
-                <p className="text-xs text-slate-400 leading-relaxed">Your data is encrypted and secure. Protected by AWS with SSL encryption. We never share your information.</p>
+                <p className="text-xs text-slate-500 leading-relaxed">Your data is encrypted and secure. Protected by AWS with SSL encryption. We never share your information.</p>
               </div>
             </div>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <div className="bg-slate-900 border border-white/5 rounded-2xl p-8">
+            <div className="glass-card shadow-lg rounded-2xl p-8">
               <h3 className="text-xl font-bold text-white mb-6">Send a Message</h3>
               <div className="space-y-4">
                 {[{ label: 'Full Name', type: 'text', placeholder: 'Your full name' }, { label: 'Email', type: 'email', placeholder: 'your@email.com' }].map(field => (
                   <div key={field.label}>
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">{field.label}</label>
-                    <input type={field.type} placeholder={field.placeholder} className="w-full bg-slate-800 border border-white/5 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-signal/50 transition-all" />
+                    <input type={field.type} placeholder={field.placeholder} className="w-full bg-slate-800 border border-white/5 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-signal/50 focus:ring-2 focus:ring-signal/10 transition-all" />
                   </div>
                 ))}
                 <div>
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Message</label>
-                  <textarea rows={4} placeholder="How can we help you?" className="w-full bg-slate-800 border border-white/5 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-signal/50 transition-all resize-none" />
+                  <textarea rows={4} placeholder="How can we help you?" className="w-full bg-slate-800 border border-white/5 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-signal/50 focus:ring-2 focus:ring-signal/10 transition-all resize-none" />
                 </div>
-                <button className="w-full py-3.5 bg-signal hover:bg-teal-500 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                <button className="w-full py-3.5 glow-btn text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
                   <Mail size={16} /> Send Message
                 </button>
               </div>
@@ -907,19 +980,19 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ════════════════ FINAL CTA ════════════════ */}
+      {/* ════════════════ FINAL CTA — KEPT DARK (Stripe pattern) ════════════════ */}
       <section className="relative z-10 py-24 px-4 sm:px-6 lg:px-8">
         <FadeIn>
-          <div className="max-w-4xl mx-auto text-center bg-slate-900 border border-signal/20 rounded-3xl p-16 relative overflow-hidden">
-            <div className="absolute inset-0 bg-signal/5 rounded-3xl" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-signal to-transparent" />
+          <div className="max-w-4xl mx-auto text-center glass rounded-3xl p-16 relative overflow-hidden border border-signal/20">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-1 bg-gradient-to-r from-transparent via-signal to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-signal/10 via-purple-600/5 to-transparent rounded-3xl" />
             <div className="relative z-10 space-y-6">
               <div className="inline-flex items-center gap-2 bg-signal/10 border border-signal/20 text-signal px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider">
                 <Sparkles size={12} /> Free to Start · No Credit Card
               </div>
               <h2 className="text-5xl font-black text-white">Stop Typing.<br /><span className="text-signal">Start Billing.</span></h2>
               <p className="text-lg text-slate-400 max-w-xl mx-auto">Join 500+ dispatchers who eliminated manual data entry and reclaimed their time.</p>
-              <button onClick={() => navigate('/signup')} className="group px-10 py-4 bg-signal hover:bg-teal-500 text-white font-black rounded-xl text-lg shadow-xl shadow-signal/30 transition-all flex items-center justify-center gap-3 mx-auto">
+              <button onClick={() => navigate('/signup')} className="group glow-btn px-10 py-4 text-white font-black rounded-xl text-lg transition-all flex items-center justify-center gap-3 mx-auto">
                 Get Started for Free <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
@@ -927,7 +1000,7 @@ export function LandingPage() {
         </FadeIn>
       </section>
 
-      {/* ════════════════ FOOTER ════════════════ */}
+      {/* ════════════════ FOOTER — KEPT DARK ════════════════ */}
       <footer className="relative z-10 border-t border-white/5 bg-slate-900/80 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <Link to="/" className="flex items-center gap-3">
@@ -948,7 +1021,7 @@ export function LandingPage() {
         </div>
       </footer>
 
-      {/* ════════════════ TEMPLATE PREVIEW MODAL ════════════════ */}
+      {/* ════════════════ TEMPLATE PREVIEW MODAL — KEPT AS-IS ════════════════ */}
       <AnimatePresence>
         {previewTemplate && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}

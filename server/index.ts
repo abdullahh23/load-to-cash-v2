@@ -18,8 +18,13 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPA
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 
-app.use(cors({ origin: CLIENT_ORIGIN === '*' ? true : CLIENT_ORIGIN, credentials: true }));
-app.use(express.json());
+// Security: Never allow credentials with wildcard origin
+app.use(cors({
+  origin: CLIENT_ORIGIN === '*' ? ['http://localhost:5173', 'http://localhost:3000'] : CLIENT_ORIGIN.split(',').map(s => s.trim()),
+  credentials: true,
+}));
+app.use(express.json({ limit: '10kb' }));
+app.set('trust proxy', 1); // Trust first proxy (Railway/Vercel)
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -48,7 +53,10 @@ interface AuthenticatedRequest extends express.Request {
  * Auth middleware — validates Bearer token, attaches userId + profile to request.
  */
 async function requireAuth(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return next();
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    res.status(500).json({ success: false, error: 'Authentication service not configured' });
+    return;
+  }
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
     res.status(401).json({ success: false, error: 'Unauthorized' });
@@ -93,7 +101,10 @@ async function requireApproval(req: AuthenticatedRequest, res: express.Response,
   const profile = req.userProfile;
 
   // If no profile found (Supabase not configured), allow through
-  if (!profile) return next();
+  if (!profile) {
+    res.status(403).json({ success: false, error: 'User profile not found' });
+    return;
+  }
 
   // Admins always bypass approval/quota
   if (profile.role === 'admin') return next();
@@ -118,7 +129,10 @@ async function requireApproval(req: AuthenticatedRequest, res: express.Response,
   monthStart.setHours(0, 0, 0, 0);
 
   if (resetAt < monthStart && SUPABASE_URL && SUPABASE_ANON_KEY) {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const serviceKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+    const supabase = createClient(SUPABASE_URL, serviceKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
     await supabase
       .from('profiles')
       .update({ uploads_used: 0, uploads_reset_at: monthStart.toISOString() })
@@ -293,7 +307,10 @@ app.post('/api/extract',
     // Increment upload count on successful extraction
     if (result.success && req.userId && SUPABASE_URL && SUPABASE_ANON_KEY) {
       try {
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const serviceKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+        const supabase = createClient(SUPABASE_URL, serviceKey, {
+          auth: { autoRefreshToken: false, persistSession: false },
+        });
         const { error: rpcError } = await supabase.rpc('increment_uploads', { user_id_param: req.userId });
         if (rpcError) {
           // Fallback: direct update

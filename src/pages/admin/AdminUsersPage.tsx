@@ -13,8 +13,7 @@ export function AdminUsersPage() {
   const [search, setSearch] = useState('');
   const [editingManualLimit, setEditingManualLimit] = useState<string | null>(null);
   const [editingFileLimit, setEditingFileLimit]     = useState<string | null>(null);
-  const [manualLimitValue, setManualLimitValue]     = useState('');
-  const [fileLimitValue, setFileLimitValue]         = useState('');
+  const [limitValues, setLimitValues]               = useState<Record<string, string>>({});
   const [confirmDeleteId, setConfirmDeleteId]       = useState<string | null>(null);
   const [deleting, setDeleting]                     = useState(false);
 
@@ -54,7 +53,7 @@ export function AdminUsersPage() {
 
   const handleSaveManualLimit = async (userId: string) => {
     try {
-      const val = parseInt(manualLimitValue, 10);
+      const val = parseInt(limitValues[userId] ?? '', 10);
       if (isNaN(val) || val < 0) { setError('Limit must be a positive number (0 = unlimited).'); return; }
       await updateUserManualLimit(userId, val);
       setEditingManualLimit(null);
@@ -64,7 +63,7 @@ export function AdminUsersPage() {
 
   const handleSaveFileLimit = async (userId: string) => {
     try {
-      const val = parseInt(fileLimitValue, 10);
+      const val = parseInt(limitValues[userId] ?? '', 10);
       if (isNaN(val) || val < 0) { setError('Limit must be a positive number (0 = unlimited).'); return; }
       await updateUserFileLimit(userId, val);
       setEditingFileLimit(null);
@@ -92,18 +91,17 @@ export function AdminUsersPage() {
     );
   };
 
-  const LimitEditor = ({ userId, currentLimit, currentUsed, editing, setEditing, value, setValue, onSave, icon: Icon, label }: {
+  const LimitEditor = ({ userId, currentLimit, currentUsed, editing, setEditing, onSave, icon: Icon, label }: {
     userId: string; currentLimit: number; currentUsed: number;
     editing: string | null; setEditing: (v: string | null) => void;
-    value: string; setValue: (v: string) => void;
     onSave: (id: string) => void; icon: any; label: string;
   }) => {
     if (editing === userId) {
       return (
         <div className="flex items-center gap-1 justify-center">
           <input
-            type="number" min="0" value={value}
-            onChange={e => setValue(e.target.value)}
+            type="number" min="0" value={limitValues[userId] ?? ''}
+            onChange={e => setLimitValues(prev => ({ ...prev, [userId]: e.target.value }))}
             className="w-14 px-1.5 py-1 text-xs border border-steel/20 rounded-lg text-center focus:outline-none focus:ring-1 focus:ring-signal"
             autoFocus
             onKeyDown={e => { if (e.key === 'Enter') onSave(userId); if (e.key === 'Escape') setEditing(null); }}
@@ -114,7 +112,7 @@ export function AdminUsersPage() {
     }
     return (
       <button
-        onClick={() => { setEditing(userId); setValue(String(currentLimit)); }}
+        onClick={() => { setEditing(userId); setLimitValues(prev => ({ ...prev, [userId]: String(currentLimit) })); }}
         className="inline-flex items-center gap-1 text-xs font-mono font-semibold text-road hover:text-signal transition-all"
         title={`Edit ${label} limit (0 = unlimited)`}
       >
@@ -207,7 +205,6 @@ export function AdminUsersPage() {
                       userId={u.id} currentLimit={(u as any).manual_load_limit ?? 2}
                       currentUsed={(u as any).manual_loads_used ?? 0}
                       editing={editingManualLimit} setEditing={setEditingManualLimit}
-                      value={manualLimitValue} setValue={setManualLimitValue}
                       onSave={handleSaveManualLimit} icon={PenLine} label="manual"
                     />
                   </td>
@@ -218,7 +215,6 @@ export function AdminUsersPage() {
                       userId={u.id} currentLimit={(u as any).file_upload_limit ?? 2}
                       currentUsed={(u as any).file_uploads_used ?? 0}
                       editing={editingFileLimit} setEditing={setEditingFileLimit}
-                      value={fileLimitValue} setValue={setFileLimitValue}
                       onSave={handleSaveFileLimit} icon={FileUp} label="file"
                     />
                   </td>

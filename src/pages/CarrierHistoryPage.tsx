@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 import { Search, ChevronUp, ChevronDown, Eye, Trash2, ArrowUpDown, TrendingUp, TrendingDown, X, ChevronRight, Truck, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency, formatDate } from '../lib/calc';
@@ -10,6 +10,7 @@ interface InvoiceRow {
   invoice_date: string;
   total_gross_revenue: number;
   dispatch_fee: number;
+  dispatch_percentage?: number;
   status: 'paid' | 'unpaid';
   carrier_name: string;
   carrier_snapshot: any;
@@ -385,8 +386,8 @@ export function CarrierHistoryPage({ invoices, loading, onToggleStatus, onDelete
                 <tr><td colSpan={8} className="text-center py-12 text-steel">No invoices found.</td></tr>
               ) : (
                 sorted.map(inv => (
-                  <>
-                    <tr key={inv.id} className="border-b border-steel/5 hover:bg-lane/50 transition-colors">
+                  <Fragment key={inv.id}>
+                    <tr className="border-b border-steel/5 hover:bg-lane/50 transition-colors">
                       <td className="py-3 px-2 text-steel">{new Date(inv.created_at).toLocaleDateString()}</td>
                       <td className="py-3 px-2 font-semibold text-ink">{inv.invoice_number}</td>
                       <td className="py-3 px-2 text-steel">{inv.loadCount}</td>
@@ -448,7 +449,7 @@ export function CarrierHistoryPage({ invoices, loading, onToggleStatus, onDelete
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 ))
               )}
             </tbody>
@@ -570,7 +571,7 @@ export function CarrierHistoryPage({ invoices, loading, onToggleStatus, onDelete
                         <span>{formatCurrency(Number(previewInvoice.total_gross_revenue))}</span>
                       </div>
                       <div className="flex justify-between text-sm text-steel">
-                        <span>Dispatch Fee @ 6%</span>
+                        <span>Dispatch Fee{(() => { const pct = previewInvoice.dispatch_percentage ?? (Number(previewInvoice.total_gross_revenue) > 0 ? Math.round((Number(previewInvoice.dispatch_fee) / Number(previewInvoice.total_gross_revenue)) * 100) : null); return pct != null ? ` @ ${pct}%` : ''; })()}</span>
                         <span>{formatCurrency(Number(previewInvoice.dispatch_fee))}</span>
                       </div>
                       <div className="flex justify-between items-center bg-slate-800 text-white rounded-lg px-4 py-3 mt-2">

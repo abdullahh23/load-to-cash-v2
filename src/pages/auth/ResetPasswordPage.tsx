@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthLayout, AuthInput, AuthButton, AuthLink } from '../../components/auth/AuthLayout';
 import { supabase } from '../../lib/supabase';
+import { isStrongPassword } from '../../lib/security';
 import { Lock, CheckCircle } from 'lucide-react';
 
 export function ResetPasswordPage() {
@@ -35,8 +36,9 @@ export function ResetPasswordPage() {
     e.preventDefault();
     setError(null);
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    const { valid, message } = isStrongPassword(password);
+    if (!valid) {
+      setError(message);
       return;
     }
 
@@ -97,7 +99,7 @@ export function ResetPasswordPage() {
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          placeholder="At least 6 characters"
+          placeholder="Min 8 chars, 1 uppercase, 1 number"
           required
         />
         <AuthInput
@@ -109,7 +111,7 @@ export function ResetPasswordPage() {
           required
         />
         {error && (
-          <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
+          <p role="alert" className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
         )}
         <AuthButton loading={loading}>Update Password</AuthButton>
         <p className="text-center text-sm text-steel">

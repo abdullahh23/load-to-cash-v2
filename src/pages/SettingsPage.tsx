@@ -55,6 +55,7 @@ export function SettingsPage({ company, carrier, savedCarriers, onSave, onAddCar
   const [carr, setCarr] = useState<CarrierSettings>(carrier);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleSave = async () => {
@@ -67,6 +68,7 @@ export function SettingsPage({ company, carrier, savedCarriers, onSave, onAddCar
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setUploading(true);
+    setUploadError(null);
     try {
       const ext = file.name.split('.').pop();
       const path = `${user.id}/logo-${Date.now()}.${ext}`;
@@ -76,6 +78,9 @@ export function SettingsPage({ company, carrier, savedCarriers, onSave, onAddCar
       setComp(prev => ({ ...prev, companyLogo: urlData.publicUrl }));
     } catch (err) {
       console.error('Logo upload failed:', err);
+      const message = err instanceof Error ? err.message : 'Logo upload failed. Please try a smaller image or different format.';
+      setUploadError(message);
+      setTimeout(() => setUploadError(null), 5000);
     }
     setUploading(false);
   };
@@ -108,7 +113,7 @@ export function SettingsPage({ company, carrier, savedCarriers, onSave, onAddCar
           </div>
           <h2 className="text-sm font-bold text-ink uppercase tracking-wider">Company Branding</h2>
         </div>
-        <div className="flex items-start gap-6">
+        <div className="flex flex-col sm:flex-row items-start gap-6">
           <div className="space-y-2">
             <label className="block text-xxs font-bold text-steel uppercase tracking-widest">Company Logo</label>
             {comp.companyLogo ? (
@@ -129,6 +134,7 @@ export function SettingsPage({ company, carrier, savedCarriers, onSave, onAddCar
               </button>
             )}
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+            {uploadError && <p className="text-[10px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-2 py-1 mt-1">{uploadError}</p>}
             <p className="text-[10px] text-steel">PNG, JPG. Max 120px height on invoice.</p>
           </div>
           <div className="flex-1">

@@ -29,7 +29,7 @@ export async function extractWithGemini(
   apiKey: string
 ): Promise<ExtractionResponse> {
   console.log("MODEL:", GEMINI_MODEL);
-  console.log("KEY:", apiKey.substring(0, 15));
+  console.log("KEY:", apiKey ? "****configured" : "NOT SET");
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AuthLayout, AuthInput, AuthButton, AuthLink } from '../../components/auth/AuthLayout';
 import { useAuth } from '../../contexts/AuthContext';
+import { checkRateLimit, formatRateLimitTime } from '../../lib/security';
 import { Mail } from 'lucide-react';
 
 export function ForgotPasswordPage() {
@@ -13,6 +14,15 @@ export function ForgotPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // ── Rate limiting: max 3 attempts per 5 minutes ──
+    const rateKey = `forgot:${email.toLowerCase()}`;
+    const { allowed, remainingMs } = checkRateLimit(rateKey, 3, 300_000);
+    if (!allowed) {
+      setError(`Too many reset attempts. Please wait ${formatRateLimitTime(remainingMs)} before trying again.`);
+      return;
+    }
+
     setLoading(true);
     const { error: err } = await resetPassword(email);
     setLoading(false);
@@ -33,7 +43,7 @@ export function ForgotPasswordPage() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <AuthInput label="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-          {error && <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
+          {error && <p role="alert" className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
           <AuthButton loading={loading}>Send Reset Link</AuthButton>
           <p className="text-center text-sm text-steel">
             <AuthLink to="/login">Back to sign in</AuthLink>

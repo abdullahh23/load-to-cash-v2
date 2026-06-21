@@ -19,6 +19,10 @@ export function UploadZone({ onLoadExtracted, disabled, disabledMessage }: Uploa
   const [lastFile, setLastFile] = useState<string | null>(null);
 
   const processFile = useCallback(async (file: File) => {
+    if (file.size > 20 * 1024 * 1024) {
+      setError('File is too large. Maximum size is 20MB.');
+      return;
+    }
     const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
     if (disabled) {
       setError(disabledMessage || 'Uploads are currently disabled for your account.');
@@ -58,7 +62,7 @@ export function UploadZone({ onLoadExtracted, disabled, disabledMessage }: Uploa
       setLoading(false);
       if (inputRef.current) inputRef.current.value = '';
     }
-  }, [onLoadExtracted]);
+  }, [onLoadExtracted, disabled, disabledMessage]);
 
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -70,12 +74,16 @@ export function UploadZone({ onLoadExtracted, disabled, disabledMessage }: Uploa
   return (
     <div className="space-y-4">
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Upload rate confirmation file"
         className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 relative overflow-hidden ${
           dragging
             ? 'border-signal bg-signal/5 ring-4 ring-signal/15 scale-[0.99]'
             : 'border-steel/20 hover:border-signal/50 hover:bg-lane bg-white/50'
         } ${loading ? 'pointer-events-none opacity-70' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => !loading && !disabled && inputRef.current?.click()}
+        onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !loading && !disabled) { e.preventDefault(); inputRef.current?.click(); } }}
         onDragOver={e => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
@@ -123,7 +131,7 @@ export function UploadZone({ onLoadExtracted, disabled, disabledMessage }: Uploa
       </div>
 
       {error && (
-        <div className="flex items-start gap-3 p-4 bg-red-50/50 border border-red-200/60 rounded-2xl text-red-700 text-xs font-semibold shadow-sm animate-fade-in">
+        <div role="alert" className="flex items-start gap-3 p-4 bg-red-50/50 border border-red-200/60 rounded-2xl text-red-700 text-xs font-semibold shadow-sm animate-fade-in">
           <AlertCircle size={16} className="shrink-0 text-red-600" />
           <div className="flex-1">{error}</div>
         </div>

@@ -62,9 +62,9 @@ function UserLayoutInner() {
   const userInitial = profile?.full_name?.charAt(0).toUpperCase() || profile?.email?.charAt(0).toUpperCase() || 'U';
 
   const sidebarContent = (
-    <div className="h-full flex flex-col bg-white border-r border-steel/10 shadow-sm relative no-print">
+    <div className="h-full flex flex-col bg-white dark:bg-[#0f1419]/80 dark:backdrop-blur-xl border-r border-steel/10 dark:border-white/5 shadow-sm relative no-print">
       {/* Top Header Logo */}
-      <div className="p-4 border-b border-steel/10 flex items-center justify-between">
+      <div className="p-4 border-b border-steel/10 dark:border-white/5 flex items-center justify-between">
         <div className="flex items-center gap-3 overflow-hidden">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -125,7 +125,7 @@ function UserLayoutInner() {
       </nav>
 
       {/* Sidebar Footer */}
-      <div className="p-3 border-t border-steel/10 space-y-3 bg-lane/50">
+      <div className="p-3 border-t border-steel/10 space-y-3 bg-lane/50 dark:bg-[#0a0f14]/50">
         <div className="flex items-center gap-3 px-2">
           {/* User Avatar Initial */}
           <div className="w-8 h-8 rounded-full bg-signal/10 border border-signal/20 text-signal flex items-center justify-center font-bold text-xs shrink-0">
@@ -186,7 +186,7 @@ function UserLayoutInner() {
       </aside>
 
       {/* Mobile Header Bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-steel/10 px-4 flex items-center justify-between z-30 no-print">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-[#0f1419]/90 dark:backdrop-blur-xl border-b border-steel/10 dark:border-white/5 px-4 flex items-center justify-between z-30 no-print">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-signal rounded-lg flex items-center justify-center">
             <Truck size={16} className="text-white" />
@@ -254,7 +254,7 @@ function UserLayoutInner() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.9 }}
               transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="bg-white border border-steel/10 rounded-2xl shadow-2xl shadow-ink/10 overflow-hidden w-72"
+              className="bg-white dark:bg-[#0f1419]/90 dark:backdrop-blur-xl border border-steel/10 dark:border-white/5 rounded-2xl shadow-2xl shadow-ink/10 overflow-hidden w-72"
             >
               {/* Header */}
               <div className="bg-signal px-5 py-4">

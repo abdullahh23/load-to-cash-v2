@@ -101,14 +101,14 @@ export function SignupPage() {
           maxLength={128}
           placeholder="Min 8 chars, 1 uppercase, 1 number"
         />
-        {error && <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
+        {error && <p role="alert" className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
         <AuthButton loading={loading}>Create Account</AuthButton>
         <p className="text-center text-sm text-steel">
           Already have an account? <AuthLink to="/login">Sign in</AuthLink>
         </p>
         <p className="text-center text-[10px] text-steel/70 pt-2 border-t border-steel/10 mt-2">
           By creating an account, you agree to our{' '}
-          <AuthLink to="/privacy">Privacy &amp; Security Policy</AuthLink>
+          <AuthLink to="/privacy">Privacy & Security Policy</AuthLink>
         </p>
         <div className="flex items-center justify-center gap-1.5 mt-1">
           <svg className="w-3 h-3 text-signal" fill="none" viewBox="0 0 24 24" stroke="currentColor">

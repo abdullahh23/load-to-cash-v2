@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, TrendingUp, Clock, Rocket, Target, Sparkles } from 'lucide-react';
 
@@ -37,19 +37,45 @@ const quotes = [
 
 export function MotivationalSlider() {
   const [index, setIndex] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pausedRef = useRef(false);
+
+  const startInterval = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      if (!pausedRef.current) {
+        setIndex(prev => (prev + 1) % quotes.length);
+      }
+    }, 5000);
+  }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex(prev => (prev + 1) % quotes.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    startInterval();
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [startInterval]);
+
+  const handleDotClick = (i: number) => {
+    setIndex(i);
+    startInterval(); // Reset the timer so the full 5s plays from this slide
+  };
+
+  const handleMouseEnter = () => { pausedRef.current = true; };
+  const handleMouseLeave = () => {
+    pausedRef.current = false;
+    startInterval(); // Reset timer so it doesn't fire immediately after unpause
+  };
 
   const quote = quotes[index];
   const Icon = quote.icon;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl no-print">
+    <div
+      className="relative overflow-hidden rounded-2xl no-print"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
@@ -68,7 +94,7 @@ export function MotivationalSlider() {
             {quotes.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setIndex(i)}
+                onClick={() => handleDotClick(i)}
                 className={`rounded-full transition-all duration-300 ${
                   i === index ? 'bg-white w-4 h-1.5' : 'bg-white/30 w-1.5 h-1.5'
                 }`}
