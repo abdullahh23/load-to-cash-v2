@@ -16,6 +16,9 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || '*';
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'LoadToCash <noreply@loadtocash.com>';
+const ADMIN_NOTIFICATION_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || 'nickindispatch@gmail.com';
 
 
 // Security: Never allow credentials with wildcard origin
@@ -186,6 +189,83 @@ function rateLimiter(req: express.Request, res: express.Response, next: express.
 // Health check endpoint (Railway)
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+/**
+ * POST /api/notify-signup
+ * Sends admin email notification when a new user signs up.
+ * Called from the client after successful registration.
+ */
+app.post('/api/notify-signup', express.json(), async (req, res) => {
+  if (!RESEND_API_KEY) {
+    res.json({ success: false, error: 'Resend not configured' });
+    return;
+  }
+
+  const { name, email, phone } = req.body || {};
+  if (!email) {
+    res.status(400).json({ success: false, error: 'Email required' });
+    return;
+  }
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: RESEND_FROM_EMAIL,
+        to: [ADMIN_NOTIFICATION_EMAIL],
+        subject: `🆕 New User Signup — ${name || email}`,
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 16px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <h1 style="color: #0f172a; font-size: 22px; margin: 0;">🚛 New User Registered</h1>
+              <p style="color: #64748b; font-size: 13px; margin-top: 4px;">LoadToCash Dispatch System</p>
+            </div>
+            <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Name</td>
+                  <td style="padding: 8px 0; color: #0f172a; text-align: right;">${name || '—'}</td>
+                </tr>
+                <tr style="border-top: 1px solid #f1f5f9;">
+                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Email</td>
+                  <td style="padding: 8px 0; color: #0f172a; text-align: right;">${email}</td>
+                </tr>
+                <tr style="border-top: 1px solid #f1f5f9;">
+                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Phone</td>
+                  <td style="padding: 8px 0; color: #0f172a; text-align: right;">${phone || '—'}</td>
+                </tr>
+                <tr style="border-top: 1px solid #f1f5f9;">
+                  <td style="padding: 8px 0; color: #64748b; font-weight: 600;">Time</td>
+                  <td style="padding: 8px 0; color: #0f172a; text-align: right;">${new Date().toLocaleString('en-US', { timeZone: 'America/Phoenix' })}</td>
+                </tr>
+              </table>
+            </div>
+            <p style="text-align: center; color: #94a3b8; font-size: 11px; margin-top: 16px;">
+              Go to <a href="https://loadtocash.com/admin" style="color: #14b8a6;">Admin Panel</a> to approve or manage this user.
+            </p>
+          </div>
+        `,
+      }),
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      console.log(`[Notify] Signup email sent for ${email}`);
+      res.json({ success: true });
+    } else {
+      console.error('[Notify] Resend error:', result);
+      res.json({ success: false, error: result?.message || 'Email send failed' });
+    }
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Notification failed';
+    console.error('[Notify] Error:', msg);
+    res.json({ success: false, error: msg });
+  }
 });
 
 /**

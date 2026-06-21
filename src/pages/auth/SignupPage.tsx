@@ -66,6 +66,16 @@ export function SignupPage() {
       return;
     }
 
+    // ── Notify admin about new signup (fire-and-forget, non-blocking) ──
+    try {
+      const serverUrl = import.meta.env.VITE_API_URL || '';
+      fetch(`${serverUrl}/api/notify-signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: cleanName, email: email.trim().toLowerCase(), phone: phone.trim() }),
+      }).catch(() => {}); // Silent fail — don't block user
+    } catch {}
+
     // ── Go straight to dashboard ──
     navigate(role === 'admin' ? '/admin' : '/dashboard');
   };
