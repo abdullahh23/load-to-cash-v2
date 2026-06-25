@@ -9,6 +9,7 @@ interface TemplateProps {
   invoiceDate: string;
   dueDate?: string;
   weekLabel: string;
+  pendingAmount?: number;
 }
 
 export function ExecutiveTemplate({
@@ -19,8 +20,10 @@ export function ExecutiveTemplate({
   invoiceDate,
   dueDate,
   weekLabel,
+  pendingAmount = 0,
 }: TemplateProps) {
   const { totalGrossRevenue, dispatchFee } = calcTotals(loads, company.dispatchPercentage);
+  const totalDue = dispatchFee + pendingAmount;
   const weLabel = weekLabel.replace('Week of ', 'W/E ').split('–')[1]?.trim() ?? weekLabel;
 
   const paymentMethod = company.cashApp
@@ -168,9 +171,19 @@ export function ExecutiveTemplate({
               <span style={{ color: '#718096' }}>Dispatch Rate</span>
               <span style={{ fontWeight: '600' }}>{company.dispatchPercentage}%</span>
             </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #e2e8f0' }}>
+              <span style={{ color: '#718096' }}>Dispatch Fee</span>
+              <span style={{ fontWeight: '600' }}>{formatCurrency(dispatchFee)}</span>
+            </div>
+            {pendingAmount > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #e2e8f0', background: '#fffbeb', margin: '0 -4px', paddingLeft: '4px', paddingRight: '4px' }}>
+                <span style={{ color: '#92400e', fontWeight: 600 }}>⚠ Previous Pending Balance</span>
+                <span style={{ fontWeight: '700', color: '#b45309' }}>{formatCurrency(pendingAmount)}</span>
+              </div>
+            )}
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '3px double #ecc94b', fontSize: '16px', fontWeight: '800', color: '#ecc94b' }}>
               <span style={{ textTransform: 'uppercase' }}>Amount Due</span>
-              <span>{formatCurrency(dispatchFee)}</span>
+              <span>{formatCurrency(totalDue)}</span>
             </div>
           </div>
 

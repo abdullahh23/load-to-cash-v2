@@ -9,6 +9,7 @@ interface TemplateProps {
   invoiceDate: string;
   dueDate?: string;
   weekLabel: string;
+  pendingAmount?: number;
 }
 
 export function TechTemplate({
@@ -19,8 +20,10 @@ export function TechTemplate({
   invoiceDate,
   dueDate,
   weekLabel,
+  pendingAmount = 0,
 }: TemplateProps) {
   const { totalGrossRevenue, dispatchFee } = calcTotals(loads, company.dispatchPercentage);
+  const totalDue = dispatchFee + pendingAmount;
   const weLabel = weekLabel.replace('Week of ', 'W/E ').split('–')[1]?.trim() ?? weekLabel;
 
   const paymentMethod = company.cashApp
@@ -176,13 +179,23 @@ export function TechTemplate({
             <span>Weekly gross volume</span>
             <span>{formatCurrency(totalGrossRevenue)}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', paddingBottom: '12px', fontSize: '11px', color: '#94a3b8' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', paddingBottom: '10px', borderBottom: '1px solid #334155', fontSize: '11px', color: '#94a3b8' }}>
             <span>Dispatch rate</span>
             <span>{company.dispatchPercentage}%</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingTop: '10px', borderTop: '2px solid #0d9488' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', paddingBottom: pendingAmount > 0 ? '10px' : '0', borderBottom: pendingAmount > 0 ? '1px solid #334155' : 'none', fontSize: '11px', color: '#94a3b8' }}>
+            <span>Dispatch fee</span>
+            <span>{formatCurrency(dispatchFee)}</span>
+          </div>
+          {pendingAmount > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', paddingBottom: '10px', fontSize: '11px', color: '#fbbf24', borderBottom: '1px solid #334155' }}>
+              <span>⚠ Previous Pending Balance</span>
+              <span style={{ fontWeight: '700' }}>{formatCurrency(pendingAmount)}</span>
+            </div>
+          )}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingTop: '10px', borderTop: pendingAmount > 0 ? 'none' : '2px solid #0d9488' }}>
             <span style={{ fontWeight: '700', fontSize: '12px', color: '#0d9488', textTransform: 'uppercase' }}>Amount Due</span>
-            <span style={{ fontSize: '18px', fontWeight: '800', color: '#ffffff' }}>{formatCurrency(dispatchFee)}</span>
+            <span style={{ fontSize: '18px', fontWeight: '800', color: '#ffffff' }}>{formatCurrency(totalDue)}</span>
           </div>
         </div>
 
