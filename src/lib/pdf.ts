@@ -3,10 +3,11 @@ import jsPDF from 'jspdf';
 
 /**
  * Opens a clean, isolated print window containing only the invoice.
- * This approach avoids ALL dark-mode/app-chrome bleed-in issues and
- * captures the exact current DOM state (including pending amount).
+ * - invoiceNumber becomes the default "Save As" filename in the browser PDF dialog
+ * - Popup is isolated from dark-mode/app-chrome so no bleed-in
+ * - Captures exact DOM state AFTER flushSync so pending amount is included
  */
-export function printInvoice() {
+export function printInvoice(invoiceNumber?: string) {
   const el = document.getElementById('invoice-root');
   if (!el) {
     window.print();
@@ -23,12 +24,14 @@ export function printInvoice() {
     return;
   }
 
+  const title = invoiceNumber || 'Invoice';
+
   printWin.document.write(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Invoice</title>
+  <title>${title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -42,7 +45,7 @@ export function printInvoice() {
       color-adjust: exact !important;
     }
 
-    /* Centre the invoice on screen */
+    /* Desktop: centre the 820px invoice with padding */
     body {
       display: flex;
       justify-content: center;
@@ -50,8 +53,22 @@ export function printInvoice() {
     }
 
     #invoice-root {
-      width: 100%;
-      max-width: 820px;
+      width: 820px;
+      flex-shrink: 0;
+    }
+
+    /* Mobile: scale the 820px invoice down to fit the screen */
+    @media screen and (max-width: 860px) {
+      body {
+        padding: 0;
+        overflow-x: hidden;
+      }
+      #invoice-root {
+        width: 820px;
+        transform-origin: top left;
+        transform: scale(var(--inv-scale, 1));
+      }
+      /* JS sets --inv-scale below */
     }
 
     @media print {
@@ -59,22 +76,37 @@ export function printInvoice() {
         size: A4 portrait;
         margin: 8mm 10mm;
       }
-
       html, body {
         background: #ffffff !important;
         padding: 0 !important;
         display: block !important;
       }
-
       #invoice-root {
-        max-width: 100% !important;
         width: 100% !important;
+        transform: none !important;
       }
     }
   </style>
 </head>
 <body>
   ${invoiceHtml}
+  <script>
+    // Scale invoice to fit mobile viewport width
+    function applyScale() {
+      var vw = window.innerWidth;
+      if (vw < 860) {
+        var scale = Math.min(1, (vw) / 820);
+        document.documentElement.style.setProperty('--inv-scale', scale);
+        // Shrink body height to match scaled content
+        var root = document.getElementById('invoice-root');
+        if (root) {
+          root.parentElement.style.height = (root.scrollHeight * scale) + 'px';
+        }
+      }
+    }
+    applyScale();
+    window.addEventListener('resize', applyScale);
+  </script>
 </body>
 </html>`);
 

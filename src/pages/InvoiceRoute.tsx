@@ -75,7 +75,7 @@ export function InvoiceRoute() {
         }
       }
     }
-    printInvoice();
+    printInvoice(invoiceNumber);
   };
 
   const handlePendingConfirm = () => {

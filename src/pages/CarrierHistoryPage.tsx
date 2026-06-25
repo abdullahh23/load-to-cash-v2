@@ -577,7 +577,7 @@ export function CarrierHistoryPage({ invoices, loading, onToggleStatus, onDelete
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => printInvoice()}
+                      onClick={() => printInvoice(previewInvoice.invoice_number)}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-80"
                       style={{ background: 'rgba(29,85,176,0.4)', border: '1px solid rgba(29,85,176,0.5)' }}
                     >

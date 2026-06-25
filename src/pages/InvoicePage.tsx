@@ -40,8 +40,6 @@ export function InvoicePage({
   ];
 
   const handleDownload = async () => {
-    // Trigger save via onPrint first, then download
-    await onPrint();
     downloadInvoicePDF(invoiceNumber);
   };
 
@@ -102,19 +100,26 @@ export function InvoicePage({
         </div>
       </div>
 
-      {/* Invoice Container */}
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-panel border border-gray-200 dark:border-gray-800 overflow-x-auto p-4 md:p-8 flex justify-center">
-        <div className="shadow-lg border border-gray-200 dark:border-gray-700 rounded-sm bg-white overflow-hidden">
-          <InvoiceTemplate
-            loads={loads}
-            company={company}
-            carrier={carrier}
-            invoiceNumber={invoiceNumber}
-            invoiceDate={invoiceDate}
-            dueDate={dueDate}
-            weekLabel={weekLabel}
-            pendingAmount={pendingAmount}
-          />
+      {/* Invoice Container — mobile: horizontal scroll inside card, not whole page */}
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-panel border border-gray-200 dark:border-gray-800">
+        <div
+          className="overflow-x-auto"
+          style={{ WebkitOverflowScrolling: 'touch' as any }}
+        >
+          <div style={{ minWidth: '820px', display: 'flex', justifyContent: 'center', padding: '24px' }}>
+            <div className="shadow-lg border border-gray-200 dark:border-gray-700 rounded-sm bg-white overflow-hidden" style={{ width: '820px' }}>
+              <InvoiceTemplate
+                loads={loads}
+                company={company}
+                carrier={carrier}
+                invoiceNumber={invoiceNumber}
+                invoiceDate={invoiceDate}
+                dueDate={dueDate}
+                weekLabel={weekLabel}
+                pendingAmount={pendingAmount}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
