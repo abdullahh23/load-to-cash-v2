@@ -77,28 +77,21 @@ function UserLayoutInner() {
         style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
       >
         <div className="flex items-center gap-3 overflow-hidden min-w-0">
-          {/* Logo mark */}
-          <div
-            className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: '#1d55b0' }}
-          >
-            <Truck size={18} className="text-white" />
-          </div>
-
-          {!collapsed && (
-            <motion.div
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.18 }}
-              className="min-w-0"
-            >
-              <div className="text-white font-bold text-sm leading-tight tracking-tight truncate">
-                Load to Cash
-              </div>
-              <div className="text-xs mt-0.5 font-medium" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.04em' }}>
-                DISPATCH SYSTEM
-              </div>
-            </motion.div>
+          {/* Logo image — full when expanded, icon-only when collapsed */}
+          {collapsed ? (
+            <img
+              src="/logo.png"
+              alt="LoadToCash"
+              className="w-9 h-9 rounded-lg object-contain shrink-0"
+              style={{ background: '#1d55b0', padding: '2px' }}
+            />
+          ) : (
+            <img
+              src="/logo.png"
+              alt="LoadToCash"
+              className="h-10 w-auto object-contain shrink-0"
+              style={{ maxWidth: '140px' }}
+            />
           )}
         </div>
 

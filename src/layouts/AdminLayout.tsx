@@ -29,9 +29,7 @@ export function AdminLayout() {
     <div className="h-full flex flex-col bg-white border-r border-steel/10 shadow-sm">
       {/* Header */}
       <div className="p-4 border-b border-steel/10 flex items-center gap-3">
-        <div className="w-9 h-9 bg-ink rounded-xl flex items-center justify-center shadow-sm">
-          <Truck size={18} className="text-white" />
-        </div>
+        <img src="/logo.png" alt="LoadToCash" className="h-9 w-auto object-contain" style={{ maxWidth: '110px' }} />
         <div className="flex flex-col">
           <span className="text-sm font-bold text-ink leading-tight">Admin Portal</span>
           <span className="text-[10px] text-steel font-semibold uppercase tracking-wider">Load to Cash</span>
