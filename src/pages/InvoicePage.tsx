@@ -1,5 +1,5 @@
 import { Printer, LayoutTemplate, Download, CalendarClock } from 'lucide-react';
-import { downloadInvoicePDF } from '../lib/pdf';
+import { printInvoice } from '../lib/pdf';
 import { InvoiceTemplate } from '../templates/InvoiceTemplate';
 import type { Load, CompanySettings, CarrierSettings } from '../types';
 
@@ -39,9 +39,7 @@ export function InvoicePage({
     { id: 'teal', name: 'Emerald Steel' },
   ];
 
-  const handleDownload = async () => {
-    downloadInvoicePDF(invoiceNumber);
-  };
+
 
   return (
     <div className="space-y-6">
@@ -81,21 +79,22 @@ export function InvoicePage({
             />
           </div>
 
-          {/* Print Button */}
+          {/* Save PDF — auto-downloads as INV-xxx.pdf, no dialog */}
           <button
             onClick={onPrint}
             className="flex items-center gap-2 bg-signal text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-signal/90 shadow-sm transition-colors text-xs"
           >
-            <Printer size={15} />
-            Print / Save PDF
+            <Download size={15} />
+            Save PDF
           </button>
 
-          {/* Download PDF Button */}
+          {/* Physical Print — opens browser print dialog for actual printers */}
           <button
-            onClick={handleDownload}
-            className="flex items-center gap-2 px-5 py-2.5 bg-ink text-white rounded-xl font-semibold text-sm hover:bg-road transition-all shadow-sm no-print"
+            onClick={() => printInvoice(invoiceNumber)}
+            title="Print to physical printer"
+            className="flex items-center gap-2 px-4 py-2.5 bg-ink text-white rounded-xl font-semibold text-xs hover:bg-road transition-all shadow-sm no-print"
           >
-            <Download size={16} /> Download PDF
+            <Printer size={15} /> Print
           </button>
         </div>
       </div>

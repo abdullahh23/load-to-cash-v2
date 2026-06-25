@@ -5,7 +5,7 @@ import { useAppLoads, useAppSettings } from '../contexts/DataContext';
 import { InvoicePage } from './InvoicePage';
 import { generateInvoiceNumber, getCurrentWeekLabel } from '../lib/calc';
 import { saveInvoice } from '../lib/invoices';
-import { printInvoice } from '../lib/pdf';
+import { printInvoice, downloadInvoicePDF } from '../lib/pdf';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, DollarSign, X } from 'lucide-react';
 
@@ -75,7 +75,9 @@ export function InvoiceRoute() {
         }
       }
     }
-    printInvoice(invoiceNumber);
+    // Download PDF directly — no print dialog, no Windows Save popup.
+    // File saves automatically as INV-xxx.pdf to the Downloads folder.
+    downloadInvoicePDF(invoiceNumber);
   };
 
   const handlePendingConfirm = () => {
