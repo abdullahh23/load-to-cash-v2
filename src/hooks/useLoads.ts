@@ -4,6 +4,36 @@ import { supabase } from '../lib/supabase';
 import { rowToLoad, loadToRow } from '../lib/db-mappers';
 import { useAuth } from '../contexts/AuthContext';
 
+// Session key — sessionStorage clears automatically when tab/browser is closed
+const SESSION_LOADS_KEY = 'ltc_session_load_ids';
+
+function getSessionLoadIds(): Set<string> {
+  try {
+    const raw = sessionStorage.getItem(SESSION_LOADS_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function addLoadIdToSession(id: string) {
+  try {
+    const ids = getSessionLoadIds();
+    ids.add(id);
+    sessionStorage.setItem(SESSION_LOADS_KEY, JSON.stringify([...ids]));
+  } catch {
+    // sessionStorage not available (private mode edge case) — fail silently
+  }
+}
+
+function removeLoadIdFromSession(id: string) {
+  try {
+    const ids = getSessionLoadIds();
+    ids.delete(id);
+    sessionStorage.setItem(SESSION_LOADS_KEY, JSON.stringify([...ids]));
+  } catch { /* ignore */ }
+}
+
 export function useLoads() {
   const { user, refreshProfile } = useAuth();
   const [loads, setLoads] = useState<Load[]>([]);
@@ -16,11 +46,25 @@ export function useLoads() {
       return;
     }
     setLoading(true);
+
+    // Only fetch loads that belong to this browser session
+    const sessionIds = getSessionLoadIds();
+
+    if (sessionIds.size === 0) {
+      // Fresh session — show empty dashboard, no loads from previous sessions
+      setLoads([]);
+      setLoading(false);
+      return;
+    }
+
+    // Session has loads — fetch only those specific loads from Supabase
     const { data, error } = await supabase
       .from('loads')
       .select('*')
       .eq('user_id', user.id)
+      .in('id', [...sessionIds])
       .order('created_at', { ascending: true });
+
     if (!error && data) {
       setLoads(data.map(rowToLoad));
     }
@@ -37,6 +81,9 @@ export function useLoads() {
     const { data, error } = await supabase.from('loads').insert(row).select().single();
     if (error || !data) throw new Error(error?.message ?? 'Failed to save load');
     const saved = rowToLoad(data);
+
+    // Track this load in the current session
+    addLoadIdToSession(saved.id);
     setLoads(prev => [...prev, saved]);
 
     // Increment counter atomically — single UPDATE avoids TOCTOU race condition
@@ -60,6 +107,7 @@ export function useLoads() {
     if (!user) return;
     const { error } = await supabase.from('loads').delete().eq('id', id).eq('user_id', user.id);
     if (error) throw new Error(error.message);
+    removeLoadIdFromSession(id);
     setLoads(prev => prev.filter(l => l.id !== id));
   }, [user]);
 
@@ -84,8 +132,11 @@ export function useLoads() {
     if (!user) return;
     const { error } = await supabase.from('loads').delete().eq('user_id', user.id);
     if (error) throw new Error(error.message);
+    // Also clear session tracking
+    try { sessionStorage.removeItem(SESSION_LOADS_KEY); } catch { /* ignore */ }
     setLoads([]);
   }, [user]);
 
   return { loads, loading, addLoad, removeLoad, updateLoad, clearLoads, refreshLoads: fetchLoads };
 }
+
