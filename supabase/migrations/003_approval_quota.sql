@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS public.admin_notifications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   type text NOT NULL DEFAULT 'new_user',
   user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE,
-  admin_email text NOT NULL DEFAULT 'nickdispatch@gmail.com',
+  admin_email text NOT NULL DEFAULT 'Nickindispatch@gmail.com',
   message text NOT NULL,
   is_read boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now()

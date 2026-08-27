@@ -309,7 +309,7 @@ function UserLayoutInner() {
               <div className="p-3 space-y-2">
                 {/* WhatsApp */}
                 <a
-                  href="https://wa.me/16023451572"
+                  href="https://wa.me/16023413327"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 rounded-lg bg-green-50 hover:bg-green-100 border border-green-200 transition-colors group"
@@ -319,14 +319,14 @@ function UserLayoutInner() {
                   </div>
                   <div>
                     <div className="text-xs font-semibold text-green-800">WhatsApp Chat</div>
-                    <div className="text-[11px] text-green-600">+1 (602) 345-1572</div>
+                    <div className="text-[11px] text-green-600">+1 (602) 341-3327</div>
                   </div>
                   <div className="ml-auto w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 </a>
 
                 {/* Phone */}
                 <a
-                  href="tel:+16023451528"
+                  href="tel:+16023413327"
                   className="flex items-center gap-3 p-3 rounded-lg bg-lane hover:bg-signal/5 border border-steel/10 hover:border-signal/30 transition-colors group"
                 >
                   <div className="w-8 h-8 rounded-lg bg-signal/10 border border-signal/20 flex items-center justify-center shrink-0 group-hover:bg-signal transition-colors">
@@ -334,7 +334,7 @@ function UserLayoutInner() {
                   </div>
                   <div>
                     <div className="text-xs font-semibold text-ink">Main Office</div>
-                    <div className="text-[11px] text-steel">(602) 345-1528</div>
+                    <div className="text-[11px] text-steel">(602) 341-3327</div>
                   </div>
                 </a>
 
