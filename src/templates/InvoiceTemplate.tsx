@@ -152,6 +152,7 @@ function ClassicTemplate({
         <thead>
           <tr style={{ background: NAVY, color: '#ffffff' }}>
             <th style={{ padding: '11px 14px', textAlign: 'left', fontWeight: '600', fontSize: '12px', width: '32px' }}>#</th>
+            <th style={{ padding: '11px 14px', textAlign: 'left', fontWeight: '600', fontSize: '12px' }}>Date</th>
             <th style={{ padding: '11px 14px', textAlign: 'left', fontWeight: '600', fontSize: '12px' }}>Load #</th>
             <th style={{ padding: '11px 14px', textAlign: 'left', fontWeight: '600', fontSize: '12px' }}>Broker</th>
             <th style={{ padding: '11px 14px', textAlign: 'left', fontWeight: '600', fontSize: '12px' }}>Route</th>
@@ -161,7 +162,7 @@ function ClassicTemplate({
         <tbody>
           {loads.length === 0 ? (
             <tr style={{ background: '#ffffff' }}>
-              <td colSpan={5} style={{ padding: '24px', textAlign: 'center', color: GRAY_LABEL, fontStyle: 'italic', border: `1px solid ${BORDER}`, borderTop: 'none' }}>
+              <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: GRAY_LABEL, fontStyle: 'italic', border: `1px solid ${BORDER}`, borderTop: 'none' }}>
                 No loads added yet
               </td>
             </tr>
@@ -170,9 +171,11 @@ function ClassicTemplate({
               const route = load.originCity && load.destinationCity
                 ? `${load.originCity}, ${load.originState} → ${load.destinationCity}, ${load.destinationState}`
                 : '—';
+              const pDate = (load as any).pickupDate || (load as any).pickup_date || (load as any).date;
               return (
                 <tr key={load.id} style={{ background: i % 2 === 0 ? '#ffffff' : NAVY_LIGHT }}>
                   <td style={{ padding: '10px 14px', color: GRAY_LABEL, borderBottom: `1px solid ${BORDER}` }}>{i + 1}</td>
+                  <td style={{ padding: '10px 14px', color: '#3d4f63', borderBottom: `1px solid ${BORDER}`, whiteSpace: 'nowrap' }}>{formatDate(pDate)}</td>
                   <td style={{ padding: '10px 14px', fontWeight: '600', color: NAVY, borderBottom: `1px solid ${BORDER}` }}>{load.loadNumber || '—'}</td>
                   <td style={{ padding: '10px 14px', color: '#3d4f63', borderBottom: `1px solid ${BORDER}` }}>{load.brokerName || '—'}</td>
                   <td style={{ padding: '10px 14px', color: '#3d4f63', borderBottom: `1px solid ${BORDER}` }}>{route}</td>
@@ -185,7 +188,7 @@ function ClassicTemplate({
           {/* TOTAL WEEKLY GROSS row */}
           {loads.length > 0 && (
             <tr style={{ background: NAVY_LIGHT }}>
-              <td colSpan={3} style={{ padding: '12px 14px', borderBottom: `1px solid ${BORDER}` }} />
+              <td colSpan={4} style={{ padding: '12px 14px', borderBottom: `1px solid ${BORDER}` }} />
               <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: '700', color: NAVY, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.3px', borderBottom: `1px solid ${BORDER}`, whiteSpace: 'nowrap' }}>
                 TOTAL WEEKLY GROSS
               </td>

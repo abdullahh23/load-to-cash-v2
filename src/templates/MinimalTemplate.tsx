@@ -100,6 +100,7 @@ export function MinimalTemplate({
         <thead>
           <tr style={{ borderBottom: '1px solid #111', fontSize: '11px', color: '#666', textAlign: 'left' }}>
             <th style={{ padding: '8px 4px', fontWeight: '500' }}>#</th>
+            <th style={{ padding: '8px 4px', fontWeight: '500' }}>Date</th>
             <th style={{ padding: '8px 4px', fontWeight: '500' }}>Load #</th>
             <th style={{ padding: '8px 4px', fontWeight: '500' }}>Broker</th>
             <th style={{ padding: '8px 4px', fontWeight: '500' }}>Route</th>
@@ -109,7 +110,7 @@ export function MinimalTemplate({
         <tbody>
           {loads.length === 0 ? (
             <tr>
-              <td colSpan={5} style={{ padding: '20px 4px', textAlign: 'center', color: '#999' }}>
+              <td colSpan={6} style={{ padding: '20px 4px', textAlign: 'center', color: '#999' }}>
                 No loads listed
               </td>
             </tr>
@@ -118,9 +119,11 @@ export function MinimalTemplate({
               const route = load.originCity && load.destinationCity
                 ? `${load.originCity}, ${load.originState} → ${load.destinationCity}, ${load.destinationState}`
                 : '—';
+              const pDate = (load as any).pickupDate || (load as any).pickup_date || (load as any).date;
               return (
                 <tr key={load.id} style={{ borderBottom: '1px solid #eee' }}>
                   <td style={{ padding: '10px 4px', color: '#888' }}>{index + 1}</td>
+                  <td style={{ padding: '10px 4px', color: '#666', whiteSpace: 'nowrap' }}>{formatDate(pDate)}</td>
                   <td style={{ padding: '10px 4px', fontWeight: '600' }}>{load.loadNumber}</td>
                   <td style={{ padding: '10px 4px' }}>{load.brokerName}</td>
                   <td style={{ padding: '10px 4px', color: '#444' }}>{route}</td>

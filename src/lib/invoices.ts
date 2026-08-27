@@ -260,3 +260,82 @@ export async function fetchCarrierHistory(userId: string) {
   if (error) throw new Error(error.message);
   return data ?? [];
 }
+
+// ── DESKTOP LICENSE KEYS API ───────────────────────────────────────
+export interface LicenseKeyRecord {
+  id: string;
+  license_key: string;
+  customer_name?: string;
+  customer_email?: string;
+  is_active: boolean;
+  upload_limit: number;
+  uploads_used: number;
+  created_at: string;
+  expires_at?: string;
+}
+
+export async function fetchLicenseKeys(): Promise<LicenseKeyRecord[]> {
+  const { data, error } = await supabase
+    .from('license_keys')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+export async function createLicenseKey(params: {
+  customerName?: string;
+  customerEmail?: string;
+  uploadLimit?: number;
+  expiresInDays?: number;
+}): Promise<LicenseKeyRecord> {
+  // Generate random LTCK-XXXX-YYYY format key
+  const part1 = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const part2 = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const key = `LTCK-${part1}-${part2}`;
+
+  const days = params.expiresInDays || 30; // Default 1 Month (30 days)
+  const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+
+  const { data, error } = await supabase
+    .from('license_keys')
+    .insert({
+      license_key: key,
+      customer_name: params.customerName || 'Customer',
+      customer_email: params.customerEmail || '',
+      is_active: true,
+      upload_limit: params.uploadLimit || 20,
+      uploads_used: 0,
+      expires_at: expiresAt,
+    })
+    .select()
+    .single();
+
+  if (error || !data) throw new Error(error?.message || 'Failed to create license key');
+  return data;
+}
+
+export async function toggleLicenseKeyStatus(id: string, isActive: boolean) {
+  const { error } = await supabase
+    .from('license_keys')
+    .update({ is_active: isActive })
+    .eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+export async function updateLicenseKeyLimit(id: string, uploadLimit: number) {
+  const { error } = await supabase
+    .from('license_keys')
+    .update({ upload_limit: uploadLimit })
+    .eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteLicenseKey(id: string) {
+  const { error } = await supabase
+    .from('license_keys')
+    .delete()
+    .eq('id', id);
+  if (error) throw new Error(error.message);
+}
+

@@ -125,6 +125,7 @@ export function TechTemplate({
         <thead>
           <tr style={{ borderBottom: '2px solid #e2e8f0', color: '#64748b', textAlign: 'left', fontSize: '11px' }}>
             <th style={{ padding: '8px 10px', fontWeight: '600' }}>#</th>
+            <th style={{ padding: '8px 10px', fontWeight: '600' }}>Date</th>
             <th style={{ padding: '8px 10px', fontWeight: '600' }}>Load #</th>
             <th style={{ padding: '8px 10px', fontWeight: '600' }}>Broker</th>
             <th style={{ padding: '8px 10px', fontWeight: '600' }}>Route</th>
@@ -134,7 +135,7 @@ export function TechTemplate({
         <tbody>
           {loads.length === 0 ? (
             <tr>
-              <td colSpan={5} style={{ padding: '20px', textAlign: 'center', color: '#94a3b8' }}>
+              <td colSpan={6} style={{ padding: '20px', textAlign: 'center', color: '#94a3b8' }}>
                 No active loads listed.
               </td>
             </tr>
@@ -143,9 +144,11 @@ export function TechTemplate({
               const route = load.originCity && load.destinationCity
                 ? `${load.originCity}, ${load.originState} → ${load.destinationCity}, ${load.destinationState}`
                 : '—';
+              const pDate = (load as any).pickupDate || (load as any).pickup_date || (load as any).date;
               return (
                 <tr key={load.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '10px', color: '#94a3b8' }}>{index + 1}</td>
+                  <td style={{ padding: '10px', color: '#475569', whiteSpace: 'nowrap' }}>{formatDate(pDate)}</td>
                   <td style={{ padding: '10px', fontWeight: '700', color: '#0f172a' }}>{load.loadNumber}</td>
                   <td style={{ padding: '10px', color: '#475569' }}>{load.brokerName}</td>
                   <td style={{ padding: '10px', color: '#475569' }}>{route}</td>

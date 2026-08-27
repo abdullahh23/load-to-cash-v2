@@ -6,7 +6,7 @@ import {
   DollarSign, Star, Menu, X, Shield, Zap, Clock,
   BarChart3, FileText, Users, Cloud, Quote,
   TrendingUp, CheckCircle, Sparkles, XCircle, ChevronDown,
-  Phone, Mail, MapPin
+  Phone, Mail, MapPin, Download, HardDrive, MessageSquare, Key, Laptop, Send, ShieldCheck
 } from 'lucide-react';
 
 /* ─── smooth-scroll helper ──────────────────────────────────────────────────── */
@@ -241,17 +241,17 @@ export function LandingPage() {
           {/* CTA row */}
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/signup"
+            <a href="#desktop-app"
               className="group flex items-center gap-3 px-8 py-4 rounded-2xl text-sm font-bold text-white shadow-2xl transition-all hover:scale-105 active:scale-95"
               style={{ background: 'linear-gradient(135deg, #1d55b0, #2563eb)', boxShadow: '0 8px 32px rgba(29,85,176,0.45)' }}>
-              Start for Free — No Card Required
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              <Download size={18} />
+              Download Desktop App (.exe)
+            </a>
+            <Link to="/signup"
+              className="flex items-center gap-2 px-8 py-4 rounded-2xl text-sm font-semibold text-white/90 bg-white/10 hover:bg-white/15 border border-white/15 transition-all">
+              <Sparkles size={16} className="text-yellow-400" />
+              Try Online Web Version
             </Link>
-            <button onClick={() => scrollTo('how-it-works')}
-              className="flex items-center gap-2 px-8 py-4 rounded-2xl text-sm font-semibold text-white/70 border border-white/12 hover:border-white/25 hover:text-white transition-all">
-              See How It Works
-              <ChevronDown size={15} />
-            </button>
           </motion.div>
 
           {/* Trust strip */}
@@ -393,6 +393,147 @@ export function LandingPage() {
                 </div>
               </FadeUp>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════ DESKTOP VERSION & PRIVACY SECTION ════════════ */}
+      <section id="desktop-app" className="relative z-10 py-24 px-4 bg-gradient-to-b from-blue-950/20 via-[#091325] to-[#060b14]">
+        <div className="max-w-6xl mx-auto">
+          <FadeUp className="text-center mb-14 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold"
+              style={{ background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.35)', color: '#60a5fa' }}>
+              <Laptop size={12} /> Desktop Application Edition
+            </div>
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight">
+              100% Local Data Security. <br className="hidden md:block" />
+              <span className="text-blue-400">Your System. Your Rules.</span>
+            </h2>
+            <p className="text-white/60 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+              Prefer keeping your load logs, carrier rates, and invoices strictly on your own computer? Download our standalone Windows Desktop App — zero cloud data sharing!
+            </p>
+          </FadeUp>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Desktop Card */}
+            <FadeUp delay={0.1}>
+              <div className="h-full p-8 rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-900/20 to-slate-900/40 relative overflow-hidden flex flex-col justify-between shadow-2xl">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center">
+                      <HardDrive className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full border border-blue-400/30">
+                      Windows Native App (.exe)
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-2">LoadToCash Desktop App</h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      All carrier details, gross pay logs, and generated invoices are saved <strong className="text-white">100% locally on your system</strong> (<code className="text-blue-300 text-xs bg-slate-800 px-1.5 py-0.5 rounded">AppData/Roaming</code>). Zero database cloud leaks.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center gap-3 text-xs text-slate-200">
+                      <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+                      <span><strong>100% Local Storage:</strong> Total privacy for your load records.</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-slate-200">
+                      <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+                      <span><strong>Standalone Installer:</strong> Download `.exe` & run natively without commands.</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-slate-200">
+                      <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+                      <span><strong>Flexible Licensing:</strong> 30-day expirable activation key support.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-8 border-t border-white/10 space-y-4">
+                  <div className="bg-blue-950/60 border border-blue-500/20 rounded-2xl p-4 space-y-2">
+                    <div className="text-xs font-bold text-blue-300 flex items-center gap-2">
+                      <Key className="w-4 h-4 text-yellow-400" /> How to Get Your License Key & Pricing?
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      For Desktop App License Keys & Custom Pricing, simply <strong>Send us an Email or Text Message</strong>. We generate and text/email your key instantly!
+                    </p>
+                    <div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-semibold text-white">
+                      <a href="mailto:nickdispatch@gmail.com" className="flex items-center gap-1.5 text-blue-400 hover:text-blue-300 underline">
+                        <Mail className="w-3.5 h-3.5" /> Email Us
+                      </a>
+                      <a href="tel:+10000000000" className="flex items-center gap-1.5 text-green-400 hover:text-green-300 underline">
+                        <MessageSquare className="w-3.5 h-3.5" /> Text / Call Us
+                      </a>
+                    </div>
+                  </div>
+
+                  <a
+                    href="https://drive.google.com/uc?export=download&id=16YmU_emQZwBkQhP0dbftWce09tRzmesE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <Download className="w-5 h-5" /> Download Desktop App (.exe)
+                  </a>
+                </div>
+              </div>
+            </FadeUp>
+
+            {/* Online Version Card */}
+            <FadeUp delay={0.2}>
+              <div className="h-full p-8 rounded-3xl border border-purple-500/20 bg-gradient-to-b from-purple-950/20 to-slate-900/40 relative overflow-hidden flex flex-col justify-between shadow-2xl">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center">
+                      <Cloud className="w-6 h-6 text-purple-400" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full border border-purple-400/30">
+                      Cloud Web Version
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-2">LoadToCash Web Online</h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      Instant trial in your web browser — zero installation required! Access from any computer, tablet, or mobile device on the go.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center gap-3 text-xs text-slate-200">
+                      <CheckCircle className="w-4 h-4 text-purple-400 shrink-0" />
+                      <span><strong>Zero Install:</strong> Works directly in Chrome, Edge, Safari, or Firefox.</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-slate-200">
+                      <CheckCircle className="w-4 h-4 text-purple-400 shrink-0" />
+                      <span><strong>Instant Free Trial:</strong> Test AI Rate Con parsing in 5 seconds online.</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-slate-200">
+                      <CheckCircle className="w-4 h-4 text-purple-400 shrink-0" />
+                      <span><strong>Cloud Access:</strong> Access your account anytime anywhere.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-8 border-t border-white/10 space-y-4">
+                  <div className="bg-purple-950/40 border border-purple-500/20 rounded-2xl p-4 space-y-1">
+                    <div className="text-xs font-bold text-purple-300">Want to test features online right now?</div>
+                    <p className="text-xs text-slate-300">
+                      Try our Online Version for free before downloading the Desktop App!
+                    </p>
+                  </div>
+
+                  <Link
+                    to="/signup"
+                    className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <Sparkles className="w-5 h-5 text-yellow-400" /> Start Free Online Trial <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </FadeUp>
           </div>
         </div>
       </section>

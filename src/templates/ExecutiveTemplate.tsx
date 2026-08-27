@@ -108,6 +108,7 @@ export function ExecutiveTemplate({
             <thead>
               <tr style={{ background: '#2d3748', color: '#ffffff', textAlign: 'left' }}>
                 <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: '600' }}>#</th>
+                <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: '600' }}>Date</th>
                 <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: '600' }}>Load Number</th>
                 <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: '600' }}>Broker</th>
                 <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: '600' }}>Route Details</th>
@@ -117,7 +118,7 @@ export function ExecutiveTemplate({
             <tbody>
               {loads.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ padding: '24px', textAlign: 'center', color: '#a0aec0', fontStyle: 'italic' }}>
+                  <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: '#a0aec0', fontStyle: 'italic' }}>
                     No loads assigned to this invoice period.
                   </td>
                 </tr>
@@ -126,9 +127,11 @@ export function ExecutiveTemplate({
                   const route = load.originCity && load.destinationCity
                     ? `${load.originCity}, ${load.originState} → ${load.destinationCity}, ${load.destinationState}`
                     : '—';
+                  const pDate = (load as any).pickupDate || (load as any).pickup_date || (load as any).date;
                   return (
                     <tr key={load.id} style={{ borderBottom: '1px solid #e2e8f0', background: index % 2 === 0 ? '#ffffff' : '#f7fafc' }}>
                       <td style={{ padding: '12px 16px', color: '#718096' }}>{index + 1}</td>
+                      <td style={{ padding: '12px 16px', color: '#4a5568', whiteSpace: 'nowrap' }}>{formatDate(pDate)}</td>
                       <td style={{ padding: '12px 16px', fontWeight: '700', color: '#1a202c' }}>{load.loadNumber}</td>
                       <td style={{ padding: '12px 16px' }}>{load.brokerName}</td>
                       <td style={{ padding: '12px 16px', color: '#4a5568' }}>{route}</td>
