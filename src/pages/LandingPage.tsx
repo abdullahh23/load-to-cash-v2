@@ -417,7 +417,7 @@ export function LandingPage() {
                   </div>
 
                   <a
-                    href="https://drive.google.com/uc?export=download&id=1uzLrUoYNi9TCZCo79P10YdNrYXMv_2UM"
+                    href="https://drive.google.com/uc?export=download&id=1SwnrgKX3KNUK0OHT7K9uebTmukgERoEl"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
